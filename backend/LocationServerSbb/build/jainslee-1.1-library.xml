@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<project name="Example JAIN SLEE Library tasks">
+
+  <!-- Compile project classes -->
+  <target name="compile-library" description="Compile Library classes">
+    <mkdir dir="${classes}/java/library" />
+    <javac srcdir="${src}/library" destdir="${classes}/java/library" source="${jdk.version}" target="${jdk.version}" debug="true" includes="**/*.java">
+      <classpath>
+        <path refid="slee.classpath" />
+        <fileset dir="${lib}" includes="**/*.jar"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <!-- Package and build Library Deployment Unit -->
+  <target name="package-library" depends="compile-library" description="Package and build Library Deployment Unit">
+    <copy-descriptors-and-filter fromDir="${src}" toDir="${classes}" />
+    <mkdir dir="${jars}"/>
+    <deployablejar destfile="${jars}/library-deployable-unit.jar" metainfbase="${classes}/META-INF">
+      <libraryjar destfile="${jars}/library-deployable-jar.jar" classpath="${classes}/java/library">
+        <classpath>
+          <path location="${lib}" />
+          <path location="${classes}/java/library" />
+        </classpath>
+        <fileset dir="${classes}/java/library" />
+      </libraryjar>
+    </deployablejar>
+    <delete file="${jars}/library-deployable-jar.jar" />
+  </target>
+
+  <!--  Deploy Library DU -->
+  <target name="deploy-library" depends="package-library, login" description="Deploy Library DU">
+    <slee-management>
+      <install srcfile="${jars}/library-deployable-unit.jar" url="file:${jars}/${library.name}-${library.version}-${library.vendor}-deployable-unit.jar" />
+    </slee-management>
+  </target>
+
+  <!-- Undeploy Library DU -->
+  <target name="undeploy-library" depends="login" description="Undeploy Library DU">
+    <slee-management>
+      <uninstall url="file:${jars}/${library.name}-${library.version}-${library.vendor}-deployable-unit.jar" />
+    </slee-management>
+
+  </target>
+</project>

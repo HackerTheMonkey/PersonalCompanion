@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE library-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE Library 1.1//EN"
+    "http://java.sun.com/dtd/slee-library-jar_1_1.dtd">
+
+<library-jar>
+  <library>
+    <library-name>JSON-Java-API-lib</library-name>
+    <library-vendor>org.json</library-vendor>
+    <library-version>1.0</library-version>
+    <jar>
+      <jar-name>JSON_JAVA_API.jar</jar-name>
+    </jar>
+  </library>
+</library-jar>

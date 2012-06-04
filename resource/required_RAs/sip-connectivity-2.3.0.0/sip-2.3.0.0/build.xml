@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Ant script for SIP examples management. -->
+<project name="OpenCloud Rhino SLEE SDK - SIP Examples" default="deployexamples">
+
+  <property file="${basedir}/build.local.properties"/>
+  <property file="${user.home}/.build.properties"/>
+  <property file="${basedir}/build.properties"/>
+  <property file="${basedir}/sip.properties"/>
+
+  <!-- Import common Rhino SLEE tasks -->
+  <import file="${client.home}/etc/common.xml"/>
+
+  <target name="clean" description="Remove compiled class and jar files">
+    <delete dir="${jars}"/>
+    <delete dir="${classes}"/>
+  </target>
+
+  <target name="init" depends="setup-location-service">
+    <mkdir dir="${jars}"/>
+  </target>
+
+  <path id="sip.classpath">
+    <!-- JAIN SIP 1.2 (javax.sip) interfaces -->
+    <pathelement location="${jsip.library}"/>
+    <!-- JAIN SIP 1.2 RA Type (net.java.slee.resource.sip) -->
+    <pathelement location="${jsip.ratype}"/>
+    <!-- OCSIP RA Type (com.opencloud.javax.sip) -->
+    <pathelement location="${ocsip.ratype}"/>
+  </path>
+
+  <!-- Run all SIP DDs through a filter to replace tokens -->
+  <!-- This is so that RA Types and JNDI names etc can be changed easily -->
+  <target name="generate-resources" depends="init">
+    <copy todir="${generated}" overwrite="true">
+      <fileset dir="${src}" includes="**/*.xml"/>
+      <filterchain>
+        <expandproperties/>
+      </filterchain>
+      <globmapper from="com/opencloud/slee/services/sip/*.xml" to="*.xml" handledirsep="yes"/>
+    </copy>
+  </target>   
+
+  <target name="deployexamples"
+    description="Deploy SIP Resource Adaptor and example SIP services"
+    depends="deploypresence, deployproxy"/>
+
+  <target name="undeployexamples"
+    description="Undeploy SIP Resource Adaptor and example SIP services"
+    depends="undeployproxy, undeployb2bua, undeployfmfm, undeploypresence, undeployregistrar, undeploypresenceevent, undeploylocationservice, undeploysipra, undeploy-ocsip-ratype, undeploy-jsip-ratype"/>
+
+  <target name="compile" depends="init" description="Compile service source code">
+    <mkdir dir="${classes}"/>
+    <javac srcdir="${src}" destdir="${classes}" source="1.5" target="1.5" debug="true"
+      includes="com/opencloud/slee/services/sip/**/*.java">
+      <classpath>
+        <path refid="slee.classpath"/>
+        <path refid="sip.classpath"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="build" description="Build service deployable units"
+    depends="generate-resources, sip-ac-location, sip-jdbc-location, sip-profile-location, sip-presence-event, sip-registrar, sip-proxy,
+             sip-presence, sip-b2bua, sip-fmfm, sip-persist-conn"/>
+
+  <!-- Checks if any DUs need rebuilding -->
+  <target name="uptodate-check" depends="compile">
+    <fileset id="properties" dir="${basedir}" includes="build.properties sip.properties"/>
+    <fileset id="common" dir="${classes}" includes="com/opencloud/slee/services/sip/common/*.class"/>
+    <fileset id="location.common" dir="${classes}" includes="com/opencloud/slee/services/sip/location/*.class"/>
+    <fileset id="presence.common" dir="${classes}" includes="com/opencloud/slee/services/sip/presence/*.class"/>
+    <fileset id="proxy.common" dir="${classes}" includes="com/opencloud/slee/services/sip/proxy/*.class"/>
+
+    <macrodef name="service-uptodate">
+      <attribute name="service"/>
+      <attribute name="property" default="sip-@{service}.uptodate"/>
+      <attribute name="targetfile" default="sip-@{service}-service.jar"/>
+      <element name="moresrcfiles" optional="true"/>
+      <sequential>
+        <uptodate property="@{property}" targetfile="${jars}/@{targetfile}">
+          <srcfiles dir="${src}" includes="com/opencloud/slee/services/sip/@{service}/META-INF/*.xml"/>
+          <srcfiles refid="properties"/>
+          <srcfiles refid="common"/>
+          <srcfiles dir="${classes}" includes="com/opencloud/slee/services/sip/@{service}/**/*.class"/>
+          <moresrcfiles/>
+        </uptodate>
+      </sequential>
+    </macrodef>
+
+    <service-uptodate service="location/ac" property="sip-ac-location.uptodate" targetfile="${location.ac.jar}">
+      <moresrcfiles>
+        <srcfiles refid="location.common"/>
+      </moresrcfiles>
+    </service-uptodate>
+
+    <service-uptodate service="location/jdbc" property="sip-jdbc-location.uptodate" targetfile="${location.jdbc.jar}">
+      <moresrcfiles>
+        <srcfiles refid="location.common"/>
+      </moresrcfiles>
+    </service-uptodate>
+
+    <service-uptodate service="location/profile" property="sip-profile-location.uptodate" targetfile="${location.profile.jar}">
+      <moresrcfiles>
+        <srcfiles refid="location.common"/>
+      </moresrcfiles>
+    </service-uptodate>
+
+    <service-uptodate service="registrar">
+      <moresrcfiles>
+        <srcfiles refid="location.common"/>
+        <srcfiles refid="presence.common"/>
+      </moresrcfiles>
+    </service-uptodate>
+
+    <service-uptodate service="proxy">
+      <moresrcfiles>
+        <srcfiles refid="location.common"/>
+      </moresrcfiles>
+    </service-uptodate>
+
+    <service-uptodate service="b2bua">
+      <moresrcfiles>
+        <srcfiles refid="location.common"/>
+        <srcfiles refid="proxy.common"/>
+      </moresrcfiles>
+    </service-uptodate>
+
+    <service-uptodate service="fmfm">
+      <moresrcfiles>
+        <srcfiles refid="location.common"/>
+        <srcfiles refid="proxy.common"/>
+      </moresrcfiles>
+    </service-uptodate>
+
+    <service-uptodate service="presence">
+      <moresrcfiles>
+        <srcfiles refid="location.common"/>
+      </moresrcfiles>
+    </service-uptodate>
+
+    <service-uptodate service="persistent" targetfile="${persist.conn.service.jar}"/>
+
+    <uptodate property="sip-presence-event.uptodate" targetfile="${jars}/${presence.event.jar}">
+      <srcfiles dir="${src}" includes="com/opencloud/slee/services/sip/presence/META-INF/event-jar.xml"/>
+      <srcfiles refid="presence.common"/>
+    </uptodate>
+  </target>
+
+  <target name="select-location-service" unless="location.sbb.name">
+    <!-- Setup properties for selecting the location service to use, based
+         on the "locationservice" property. -->
+    <condition property="ac.location.selected">
+      <equals arg1="${locationservice}" arg2="ac"/>
+    </condition>
+    <condition property="jdbc.location.selected">
+      <equals arg1="${locationservice}" arg2="jdbc"/>
+    </condition>
+    <condition property="profile.location.selected">
+      <or>
+        <equals arg1="${locationservice}" arg2="profile"/>
+        <and>
+          <not><isset property="jdbc.location.selected"/></not>
+          <not><isset property="ac.location.selected"/></not>
+        </and>
+      </or>
+    </condition>
+  </target>
+
+  <target name="setup-location-service" depends="select-location-service,select-ac-location-service,select-jdbc-location-service,select-profile-location-service"/>
+
+  <target name="select-ac-location-service" if="ac.location.selected">
+    <property name="location.sbb.name" value="${location.ac.sbb.name}"/>
+    <property name="location.sbb.vendor" value="${location.ac.sbb.vendor}"/>
+    <property name="location.sbb.version" value="${location.ac.sbb.version}"/>
+  </target>
+
+  <target name="select-jdbc-location-service" if="jdbc.location.selected">
+    <property name="location.sbb.name" value="${location.jdbc.sbb.name}"/>
+    <property name="location.sbb.vendor" value="${location.jdbc.sbb.vendor}"/>
+    <property name="location.sbb.version" value="${location.jdbc.sbb.version}"/>
+  </target>
+
+  <target name="select-profile-location-service" if="profile.location.selected">
+    <property name="location.sbb.name" value="${location.profile.sbb.name}"/>
+    <property name="location.sbb.vendor" value="${location.profile.sbb.vendor}"/>
+    <property name="location.sbb.version" value="${location.profile.sbb.version}"/>
+  </target>
+
+  <target name="sip-ac-location" depends="uptodate-check" unless="sip-ac-location.uptodate">
+    <deployablejar destfile="${jars}/${location.ac.jar}"
+      metainfbase="${generated}/location/ac/META-INF">
+      <sbbjar destfile="${jars}/ac-location-sbb.jar" classpath="${classes}">
+        <fileset dir="${classes}"
+          includes="com/opencloud/slee/services/sip/common/*.class,
+          com/opencloud/slee/services/sip/location/*.class,
+          com/opencloud/slee/services/sip/location/ac/*.class"/>
+      </sbbjar>
+    </deployablejar>
+    <delete file="${jars}/ac-location-sbb.jar"/>
+  </target>
+
+  <target name="sip-jdbc-location" depends="uptodate-check" unless="sip-jdbc-location.uptodate">
+    <deployablejar destfile="${jars}/${location.jdbc.jar}"
+      metainfbase="${generated}/location/jdbc/META-INF">
+      <sbbjar destfile="${jars}/jdbc-location-sbb.jar" extjarxml="oc-sbb-jar.xml" classpath="${classes}">
+        <fileset dir="${classes}"
+          includes="com/opencloud/slee/services/sip/common/*.class,
+          com/opencloud/slee/services/sip/location/*.class,
+          com/opencloud/slee/services/sip/location/jdbc/*.class"/>
+      </sbbjar>
+    </deployablejar>
+    <delete file="${jars}/jdbc-location-sbb.jar"/>
+  </target>
+
+  <target name="sip-profile-location" depends="uptodate-check" unless="sip-profile-location.uptodate">
+    <jar jarfile="${jars}/location-common.jar">
+      <fileset dir="${classes}"
+               includes="com/opencloud/slee/services/sip/location/*.class"/>
+    </jar>
+    <deployablejar destfile="${jars}/${location.profile.jar}"
+      metainfbase="${generated}/location/profile/META-INF">
+      <profilespecjar destfile="${jars}/location-profile.jar" extjarxml="oc-profile-spec-jar.xml" classpath="${classes}">
+        <manifest>
+          <attribute name="Class-Path" value="location-common.jar"/>
+        </manifest>
+      </profilespecjar>
+      <sbbjar destfile="${jars}/profile-location-sbb.jar" classpath="${classes}">
+        <manifest>
+          <attribute name="Class-Path" value="location-common.jar"/>
+        </manifest>
+        <fileset dir="${classes}"
+                 includes="com/opencloud/slee/services/sip/common/BaseSbb.class,
+                           com/opencloud/slee/services/sip/location/profile/*.class"
+                 excludes="com/opencloud/slee/services/sip/location/profile/RegistrationProfile*.class"/>
+      </sbbjar>
+      <fileset dir="${jars}" includes="location-common.jar"/>
+    </deployablejar>
+    <delete file="${jars}/profile-location-sbb.jar"/>
+  </target>
+
+  <target name="sip-presence-event" depends="uptodate-check" unless="sip-presence-event.uptodate">
+    <deployablejar destfile="${jars}/${presence.event.jar}"
+      metainfbase="${generated}/presence/META-INF">
+      <eventjar destfile="${jars}/presence-event.jar" classpath="${classes}">
+        <fileset dir="${classes}"
+          includes="com/opencloud/slee/services/sip/presence/PresentityState.class"/>
+      </eventjar>
+    </deployablejar>
+    <delete file="${jars}/presence-event.jar"/>
+  </target>
+
+  <target name="sip-registrar" depends="uptodate-check" unless="sip-registrar.uptodate">
+    <deployablejar destfile="${jars}/${registrar.service.jar}"
+      metainfbase="${generated}/registrar/META-INF">
+      <sbbjar destfile="${jars}/registrar-sbb.jar" classpath="${classes}">
+        <fileset dir="${classes}"
+          includes="com/opencloud/slee/services/sip/common/*.class,
+          com/opencloud/slee/services/sip/registrar/*.class, com/opencloud/slee/services/sip/presence/PresenceAwareSbb.class"/>
+      </sbbjar>
+    </deployablejar>
+    <delete file="${jars}/registrar-sbb.jar"/>
+  </target>
+
+  <target name="sip-presence" depends="uptodate-check" unless="sip-presence.uptodate">
+    <deployablejar destfile="${jars}/${presence.service.jar}"
+                   metainfbase="${generated}/presence/META-INF">
+      <sbbjar destfile="${jars}/presence-sbbs.jar" classpath="${classes}">
+        <fileset dir="${classes}"
+                 includes="com/opencloud/slee/services/sip/common/*.class,
+                           com/opencloud/slee/services/sip/presence/**/*.class"
+                 excludes="com/opencloud/slee/services/sip/presence/PresentityState.class,
+                           com/opencloud/slee/services/sip/presence/PresentityStateChangeEvent.class,
+                           com/opencloud/slee/services/sip/presence/NotifyStateChangeEvent.class"/>
+      </sbbjar>
+    </deployablejar>
+    <delete file="${jars}/presence-sbbs.jar"/>
+  </target>
+  
+  <target name="sip-proxy" depends="uptodate-check" unless="sip-proxy.uptodate">
+    <deployablejar destfile="${jars}/${proxy.service.jar}"
+      metainfbase="${generated}/proxy/META-INF">
+      <sbbjar destfile="${jars}/proxy-sbb.jar" classpath="${classes}">
+        <fileset dir="${classes}"
+          includes="com/opencloud/slee/services/sip/common/*.class,
+          com/opencloud/slee/services/sip/proxy/*.class"/>
+      </sbbjar>
+    </deployablejar>
+    <delete file="${jars}/proxy-sbb.jar"/>
+  </target>
+
+  <target name="sip-fmfm" depends="uptodate-check" unless="sip-fmfm.uptodate">
+    <deployablejar destfile="${jars}/${fmfm.service.jar}"
+      metainfbase="${generated}/fmfm/META-INF">
+      <profilespecjar destfile="${jars}/fmfm-profile.jar" classpath="${classes}"/>
+      <sbbjar destfile="${jars}/fmfm-sbb.jar" classpath="${classes}" extjarxml="oc-sbb-jar.xml">
+        <fileset dir="${classes}"
+          includes="com/opencloud/slee/services/sip/common/*.class,
+          com/opencloud/slee/services/sip/fmfm/**/*.class,
+          com/opencloud/slee/services/sip/proxy/*.class"
+          excludes="com/opencloud/slee/services/sip/fmfm/profile/**/*"/>
+      </sbbjar>
+    </deployablejar>
+    <delete file="${jars}/fmfm-profile.jar"/>
+    <delete file="${jars}/fmfm-sbb.jar"/>
+  </target>
+
+  <target name="sip-b2bua" depends="uptodate-check" unless="sip-b2bua.uptodate">
+    <deployablejar destfile="${jars}/${b2bua.service.jar}"
+      metainfbase="${generated}/b2bua/META-INF" extxml="oc-service.xml">
+      <sbbjar destfile="${jars}/b2bua-sbb.jar" classpath="${classes}">
+        <fileset dir="${classes}"
+          includes="com/opencloud/slee/services/sip/common/*.class,
+          com/opencloud/slee/services/sip/b2bua/**/*.class"/>
+      </sbbjar>
+    </deployablejar>
+    <delete file="${jars}/b2bua-sbb.jar"/>
+  </target>
+
+  <target name="sip-persist-conn" depends="uptodate-check" unless="sip-persistent.uptodate">
+    <deployablejar destfile="${jars}/${persist.conn.service.jar}"
+      metainfbase="${generated}/persistent/META-INF">
+      <sbbjar destfile="${jars}/persist-conn-sbb.jar" classpath="${classes}">
+        <fileset dir="${classes}" includes="com/opencloud/slee/services/sip/common/*.class"/>
+      </sbbjar>
+    </deployablejar>
+    <delete file="${jars}/persist-conn-sbb.jar"/>
+  </target>
+
+  <!-- SIP Resource Adaptor -->
+
+  <target name="deploy-jsip-ratype" depends="login">
+    <slee-management>
+      <install srcfile="${jsip.library.du}" url="file:${jsip.library.du}"/>
+      <install srcfile="${jsip.ratype.du}" url="file:${jsip.ratype.du}"/>
+    </slee-management>
+  </target>
+
+  <target name="undeploy-jsip-ratype" depends="login">
+    <slee-management>
+      <uninstall url="file:${jsip.ratype.du}"/>
+      <uninstall url="file:${jsip.library.du}"/>
+    </slee-management>
+  </target>
+
+  <target name="deploy-ocsip-ratype" depends="deploy-jsip-ratype">
+    <slee-management>
+      <install srcfile="${ocsip.ratype.du}" url="file:${ocsip.ratype.du}"/>
+    </slee-management>
+  </target>
+
+  <target name="undeploy-ocsip-ratype" depends="login">
+    <slee-management>
+      <uninstall url="file:${ocsip.ratype.du}"/>
+    </slee-management>
+  </target>
+
+  <target name="deploysipra" depends="deploy-ocsip-ratype" description="Deploy SIP resource adaptor">
+    <slee-management>
+      <install srcfile="${sip.ra.du}" url="file:${sip.ra.du}"/>
+      <createraentity entityname="${sip.ra.entity}" properties="${sip.ra.properties}">
+        <component name="${sip.ra.name}" vendor="${sip.ra.vendor}" version="${sip.ra.version}"/>
+      </createraentity>
+      <settracerlevel tracerName="root" level="${ra.tracelevel}">
+        <raentitynotificationsource entityname="${sip.ra.entity}"/>
+      </settracerlevel>
+      <bindralinkname entityname="${sip.ra.entity}" linkname="${SIP_LINKNAME}"/>
+      <activateraentity entityname="${sip.ra.entity}"/>
+    </slee-management>
+  </target>
+
+  <target name="undeploysipra" depends="login" description="Undeploy SIP resource adaptor">
+    <slee-management>
+      <deactivateraentity entityname="${sip.ra.entity}"/>
+      <unbindralinkname linkname="${SIP_LINKNAME}"/>
+      <waittilraentityisinactive entityname="${sip.ra.entity}"/>
+      <removeraentity entityname="${sip.ra.entity}"/>
+      <uninstall url="file:${sip.ra.du}"/>
+    </slee-management>
+  </target>
+
+  <!-- SIP Location Service -->
+
+  <!-- Will deploy either AC Naming, JDBC or Profile Location Service implementation,
+       depending on value of "locationservice" property. -->
+  <target name="deploylocationservice"
+          depends="deploy-ac-locationservice, deploy-jdbc-locationservice, deploy-profile-locationservice"
+          description="Deploy Location Service"/>
+  <target name="undeploylocationservice"
+          depends="undeploy-ac-locationservice, undeploy-jdbc-locationservice, undeploy-profile-locationservice"
+          description="Undeploy Location Service"/>
+
+  <target name="deploy-jdbc-locationservice" depends="build, login" if="jdbc.location.selected">
+    <slee-management>
+      <install srcfile="${jars}/${location.jdbc.jar}" url="file:${jars}/${location.jdbc.jar}"/>
+      <activateservice>
+        <component name="${location.jdbc.service.name}" vendor="${location.jdbc.service.vendor}" version="${location.jdbc.service.version}"/>
+      </activateservice>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${location.jdbc.service.name}" vendor="${location.jdbc.service.vendor}" version="${location.jdbc.service.version}"/>
+          <sbb name="${location.jdbc.sbb.name}" vendor="${location.jdbc.sbb.vendor}" version="${location.jdbc.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+    </slee-management>
+  </target>
+
+  <target name="deploy-profile-locationservice" depends="build, login" if="profile.location.selected">
+    <slee-management>
+      <install srcfile="${jars}/${location.profile.jar}" url="file:${jars}/${location.profile.jar}"/>
+      <createprofiletable tablename="${REGISTRATION_PROFILE_TABLE}">
+        <component name="${location.profile.name}" vendor="${location.profile.vendor}" version="${location.profile.version}"/>
+      </createprofiletable>
+      <activateservice>
+        <component name="${location.profile.service.name}" vendor="${location.profile.service.vendor}" version="${location.profile.service.version}"/>
+      </activateservice>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${location.profile.service.name}" vendor="${location.profile.service.vendor}" version="${location.profile.service.version}"/>
+          <sbb name="${location.profile.sbb.name}" vendor="${location.profile.sbb.vendor}" version="${location.profile.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+    </slee-management>
+  </target>
+
+  <target name="deploy-ac-locationservice" depends="build, login" if="ac.location.selected">
+    <slee-management>
+      <install srcfile="${jars}/${location.ac.jar}" url="file:${jars}/${location.ac.jar}"/>
+      <activateservice>
+        <component name="${location.ac.service.name}" vendor="${location.ac.service.vendor}" version="${location.ac.service.version}"/>
+      </activateservice>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${location.ac.service.name}" vendor="${location.ac.service.vendor}" version="${location.ac.service.version}"/>
+          <sbb name="${location.ac.sbb.name}" vendor="${location.ac.sbb.vendor}" version="${location.ac.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+    </slee-management>
+  </target>
+
+  <target name="undeploy-jdbc-locationservice" depends="login" if="jdbc.location.selected">
+    <slee-management>
+      <deactivateservice>
+        <component name="${location.jdbc.service.name}" vendor="${location.jdbc.service.vendor}" version="${location.jdbc.service.version}"/>
+      </deactivateservice>
+      <waittilserviceisinactive>
+        <component name="${location.jdbc.service.name}" vendor="${location.jdbc.service.vendor}" version="${location.jdbc.service.version}"/>
+      </waittilserviceisinactive>
+      <uninstall url="file:${jars}/${location.jdbc.jar}"/>
+    </slee-management>
+  </target>
+
+  <target name="undeploy-profile-locationservice" depends="login" if="profile.location.selected">
+    <slee-management>
+      <deactivateservice>
+        <component name="${location.profile.service.name}" vendor="${location.profile.service.vendor}" version="${location.profile.service.version}"/>
+      </deactivateservice>
+      <waittilserviceisinactive>
+        <component name="${location.profile.service.name}" vendor="${location.profile.service.vendor}" version="${location.profile.service.version}"/>
+      </waittilserviceisinactive>
+      <removeprofiletable tablename="${REGISTRATION_PROFILE_TABLE}"/>
+      <uninstall url="file:${jars}/${location.profile.jar}"/>
+    </slee-management>
+  </target>
+
+  <target name="undeploy-ac-locationservice" depends="login" unless="ac.location.selected">
+    <slee-management>
+      <deactivateservice>
+        <component name="${location.ac.service.name}" vendor="${location.ac.service.vendor}" version="${location.ac.service.version}"/>
+      </deactivateservice>
+      <waittilserviceisinactive>
+        <component name="${location.ac.service.name}" vendor="${location.ac.service.vendor}" version="${location.ac.service.version}"/>
+      </waittilserviceisinactive>
+      <uninstall url="file:${jars}/${location.ac.jar}"/>
+    </slee-management>
+  </target>
+
+  <!-- SIP Registrar Service -->
+
+  <target name="deployregistrar" depends="build, deploylocationservice, deploypresenceevent, deploysipra"
+    description="Deploy SIP Registrar service">
+    <slee-management>
+      <install srcfile="${jars}/${registrar.service.jar}" url="file:${jars}/${registrar.service.jar}"/>
+      <activateservice>
+        <component name="${registrar.service.name}" vendor="${registrar.service.vendor}" version="${registrar.service.version}"/>
+      </activateservice>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${registrar.service.name}" vendor="${registrar.service.vendor}" version="${registrar.service.version}"/>
+          <sbb name="${registrar.sbb.name}" vendor="${registrar.sbb.vendor}" version="${registrar.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+      <!-- also set trace level for child location service sbb -->
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${registrar.service.name}" vendor="${registrar.service.vendor}" version="${registrar.service.version}"/>
+          <sbb name="${location.sbb.name}" vendor="${location.sbb.vendor}" version="${location.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+    </slee-management>
+  </target>
+
+  <target name="undeployregistrar" depends="login"
+    description="Undeploy SIP Registrar service">
+    <slee-management>
+      <deactivateservice>
+        <component name="${registrar.service.name}" vendor="${registrar.service.vendor}" version="${registrar.service.version}"/>
+      </deactivateservice>
+      <waittilserviceisinactive>
+        <component name="${registrar.service.name}" vendor="${registrar.service.vendor}" version="${registrar.service.version}"/>
+      </waittilserviceisinactive>
+      <uninstall url="file:${jars}/${registrar.service.jar}"/>
+    </slee-management>
+  </target>
+  
+  <!-- SIP Presence Event -->
+
+  <target name="deploypresenceevent" depends="build, login"
+    description="Deploy SIP Presence event">
+    <slee-management>
+      <install srcfile="${jars}/${presence.event.jar}" url="file:${jars}/${presence.event.jar}"/>
+    </slee-management>
+  </target>
+
+  <target name="undeploypresenceevent" depends="login"
+    description="Undeploy SIP Presence event">
+    <slee-management>
+      <uninstall url="file:${jars}/${presence.event.jar}"/>
+    </slee-management>
+  </target>
+ 
+  <!-- SIP Presence Service -->
+
+  <target name="deploypresence" depends="build, deployregistrar"
+    description="Deploy SIP Presence Service">
+    <slee-management>
+      <install srcfile="${jars}/${presence.service.jar}" url="file:${jars}/${presence.service.jar}"/>
+      <activateservice>
+        <component name="${presence.service.name}" vendor="${presence.service.vendor}" version="${presence.service.version}"/>
+      </activateservice>
+      <activateservice>
+        <component name="${notify.service.name}" vendor="${notify.sbb.vendor}" version="${notify.sbb.version}"/>
+      </activateservice>
+      <activateservice>
+        <component name="${publish.service.name}" vendor="${publish.service.vendor}" version="${publish.service.version}"/>
+      </activateservice>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${presence.service.name}" vendor="${presence.service.vendor}" version="${presence.service.version}"/>
+          <sbb name="${presence.sbb.name}" vendor="${presence.sbb.vendor}" version="${presence.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${notify.service.name}" vendor="${notify.service.vendor}" version="${notify.service.version}"/>
+          <sbb name="${notify.sbb.name}" vendor="${notify.service.vendor}" version="${notify.service.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+      <!-- also set trace level for child presence service sbb -->
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${notify.service.name}" vendor="${notify.service.vendor}" version="${notify.service.version}"/>
+          <sbb name="${presence.sbb.name}" vendor="${presence.sbb.vendor}" version="${presence.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${publish.service.name}" vendor="${publish.service.vendor}" version="${publish.service.version}"/>
+          <sbb name="${publish.sbb.name}" vendor="${publish.service.vendor}" version="${publish.service.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+      <!-- also set trace level for child location service sbb -->
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${publish.service.name}" vendor="${publish.service.vendor}" version="${publish.service.version}"/>
+          <sbb name="${location.sbb.name}" vendor="${location.sbb.vendor}" version="${location.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+    </slee-management>
+  </target>
+
+  <target name="undeploypresence" depends="login"
+          description="Undeploy SIP Presence Service">
+    <slee-management>
+      <deactivateservice>
+        <component name="${presence.service.name}" vendor="${presence.service.vendor}" version="${presence.service.version}"/>
+      </deactivateservice>
+      <deactivateservice>
+        <component name="${notify.service.name}" vendor="${notify.service.vendor}" version="${notify.service.version}"/>
+      </deactivateservice>
+      <deactivateservice>
+        <component name="${publish.service.name}" vendor="${publish.service.vendor}" version="${publish.service.version}"/>
+      </deactivateservice>
+      <waittilserviceisinactive>
+        <component name="${presence.service.name}" vendor="${presence.service.vendor}" version="${presence.service.version}"/>
+      </waittilserviceisinactive>
+      <waittilserviceisinactive>
+        <component name="${notify.service.name}" vendor="${notify.service.vendor}" version="${notify.service.version}"/>
+      </waittilserviceisinactive>
+      <waittilserviceisinactive>
+        <component name="${publish.service.name}" vendor="${publish.service.vendor}" version="${publish.service.version}"/>
+      </waittilserviceisinactive>
+      <uninstall url="file:${jars}/${presence.service.jar}"/>
+    </slee-management>
+  </target>
+
+  <!-- SIP Proxy Service -->
+
+  <target name="deployproxy" depends="build, deployregistrar, undeployfmfm, undeployb2bua"
+    description="Deploy SIP Proxy service">
+    <slee-management>
+      <install srcfile="${jars}/${proxy.service.jar}" url="file:${jars}/${proxy.service.jar}"/>
+      <activateservice>
+        <component name="${proxy.service.name}" vendor="${proxy.service.vendor}" version="${proxy.service.version}"/>
+      </activateservice>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${proxy.service.name}" vendor="${proxy.service.vendor}" version="${proxy.service.version}"/>
+          <sbb name="${proxy.sbb.name}" vendor="${proxy.sbb.vendor}" version="${proxy.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+    </slee-management>
+  </target>
+
+  <target name="undeployproxy" depends="login"
+    description="Undeploy SIP Proxy service">
+    <slee-management>
+      <deactivateservice>
+        <component name="${proxy.service.name}" vendor="${proxy.service.vendor}" version="${proxy.service.version}"/>
+      </deactivateservice>
+      <waittilserviceisinactive>
+        <component name="${proxy.service.name}" vendor="${proxy.service.vendor}" version="${proxy.service.version}"/>
+      </waittilserviceisinactive>
+      <uninstall url="file:${jars}/${proxy.service.jar}"/>
+    </slee-management>
+  </target>
+
+  <!-- SIP Find Me/Follow Me Service -->
+
+  <target name="deployfmfm" depends="build, deployregistrar, undeployproxy, undeployb2bua"
+    description="Deploy Find Me/Follow Me service">
+    <slee-management>
+      <install srcfile="${jars}/${fmfm.service.jar}" url="file:${jars}/${fmfm.service.jar}"/>
+      <createprofiletable tablename="${FMFM_PROFILE_TABLE_NAME}">
+        <component name="${fmfm.profile.name}" vendor="${fmfm.profile.vendor}" version="${fmfm.profile.version}"/>
+      </createprofiletable>
+      <activateservice>
+        <component name="${fmfm.service.name}" vendor="${fmfm.service.vendor}" version="${fmfm.service.version}"/>
+      </activateservice>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${fmfm.service.name}" vendor="${fmfm.service.vendor}" version="${fmfm.service.version}"/>
+          <sbb name="${fmfm.sbb.name}" vendor="${fmfm.sbb.vendor}" version="${fmfm.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${fmfm.service.name}" vendor="${fmfm.service.vendor}" version="${fmfm.service.version}"/>
+          <sbb name="${fmfm.proxy.sbb.name}" vendor="${fmfm.proxy.sbb.vendor}" version="${fmfm.proxy.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+    </slee-management>
+  </target>
+
+  <target name="undeployfmfm" depends="login"
+    description="Undeploy Find Me/Follow Me service">
+    <slee-management>
+      <removeprofiletable tablename="${FMFM_PROFILE_TABLE_NAME}"/>
+      <deactivateservice>
+        <component name="${fmfm.service.name}" vendor="${fmfm.service.vendor}" version="${fmfm.service.version}"/>
+      </deactivateservice>
+      <waittilserviceisinactive>
+        <component name="${fmfm.service.name}" vendor="${fmfm.service.vendor}" version="${fmfm.service.version}"/>
+      </waittilserviceisinactive>
+      <uninstall url="file:${jars}/${fmfm.service.jar}"/>
+    </slee-management>
+  </target>
+
+  <!-- SIP B2BUA Service -->
+
+  <target name="deployb2bua" depends="build, deployregistrar, undeployproxy, undeployfmfm"
+    description="Deploy SIP B2BUA service">
+    <slee-management>
+      <install srcfile="${jars}/${b2bua.service.jar}" url="file:${jars}/${b2bua.service.jar}"/>
+      <activateservice>
+        <component name="${b2bua.service.name}" vendor="${b2bua.service.vendor}" version="${b2bua.service.version}"/>
+      </activateservice>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${b2bua.service.name}" vendor="${b2bua.service.vendor}" version="${b2bua.service.version}"/>
+          <sbb name="${b2bua.sbb.name}" vendor="${b2bua.sbb.vendor}" version="${b2bua.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+    </slee-management>
+  </target>
+
+  <target name="undeployb2bua" depends="login"
+    description="Undeploy SIP B2BUA service">
+    <slee-management>
+      <deactivateservice>
+        <component name="${b2bua.service.name}" vendor="${b2bua.service.vendor}" version="${b2bua.service.version}"/>
+      </deactivateservice>
+      <waittilserviceisinactive>
+        <component name="${b2bua.service.name}" vendor="${b2bua.service.vendor}" version="${b2bua.service.version}"/>
+      </waittilserviceisinactive>
+      <uninstall url="file:${jars}/${b2bua.service.jar}"/>
+    </slee-management>
+  </target>
+
+  <!-- SIP Persistent Outbound Connection Service -->
+
+  <target name="deploy-persist-conn" depends="build, deploysipra"
+    description="Deploy SIP Persistent Outbound Connection service">
+    <slee-management>
+      <install srcfile="${jars}/${persist.conn.service.jar}" url="file:${jars}/${persist.conn.service.jar}"/>
+      <activateservice>
+        <component name="${persist.conn.service.name}" vendor="${persist.conn.service.vendor}" version="${persist.conn.service.version}"/>
+      </activateservice>
+      <settracerlevel tracerName="root" level="${sbb.tracelevel}">
+        <sbbnotificationsource>
+          <service name="${persist.conn.service.name}" vendor="${persist.conn.service.vendor}" version="${persist.conn.service.version}"/>
+          <sbb name="${persist.conn.sbb.name}" vendor="${persist.conn.sbb.vendor}" version="${persist.conn.sbb.version}"/>
+        </sbbnotificationsource>
+      </settracerlevel>
+    </slee-management>
+  </target>
+
+  <target name="undeploy-persist-conn" depends="login"
+    description="Undeploy SIP Persistent Outbound Connection service">
+    <slee-management>
+      <deactivateservice>
+        <component name="${persist.conn.service.name}" vendor="${persist.conn.service.vendor}" version="${persist.conn.service.version}"/>
+      </deactivateservice>
+      <waittilserviceisinactive>
+        <component name="${persist.conn.service.name}" vendor="${persist.conn.service.vendor}" version="${persist.conn.service.version}"/>
+      </waittilserviceisinactive>
+      <uninstall url="file:${jars}/${persist.conn.service.jar}"/>
+    </slee-management>
+  </target>
+
+</project>

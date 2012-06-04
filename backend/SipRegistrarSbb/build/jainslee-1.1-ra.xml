@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+
+<project name="Example JAIN SLEE RA tasks">
+
+  <target name="compile-ratype" description="Compile RAType classes">
+    <mkdir dir="${classes}/java/ratype" />
+    <javac srcdir="${src}/ratype" destdir="${classes}/java/ratype" source="${jdk.version}" target="${jdk.version}" debug="true" includes="**/*.java">
+      <classpath>
+        <path refid="slee.classpath" />
+        <fileset dir="${lib}" includes="**/*.jar" />
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile-ra" depends="compile-ratype" description="Compile RA classes">
+    <mkdir dir="${classes}/java/ra" />
+    <javac srcdir="${src}/ra" destdir="${classes}/java/ra" source="${jdk.version}" target="${jdk.version}" debug="true" includes="**/*.java">
+      <classpath>
+        <path refid="slee.classpath" />
+        <path location="${lib}" />
+        <path location="${classes}/java/ratype" />
+        <path location="${classes}/java/events" />
+      </classpath>
+    </javac>
+  </target>
+
+  <!-- Package and build RA Deployment Unit -->
+  <target name="package-ratype" depends="compile-ratype" description="Package and build RAType Deployment Unit">
+    <copy-descriptors-and-filter fromDir="${src}" toDir="${classes}" />
+    <mkdir dir="${jars}" />
+    <deployablejar destfile="${jars}/ratype-deployable-unit.jar" metainfbase="${classes}/META-INF">
+      <resourceadaptortypejar destfile="${jars}/ratype-deployable-jar.jar" classpath="${classes}/java/ratype">
+        <!-- extjarxml="oc-resource-adaptor-type-jar.xml"-->
+        <fileset dir="${classes}/java/ratype" />
+      </resourceadaptortypejar>
+    </deployablejar>
+    <delete file="${jars}/ratype-deployable-jar.jar" />
+  </target>
+
+  <!-- Package and build RA Deployment Unit -->
+  <target name="package-ra" depends="compile-ra" description="Package and build RA Deployment Unit">
+    <copy-descriptors-and-filter fromDir="${src}" toDir="${classes}" />
+    <mkdir dir="${jars}" />
+    <deployablejar destfile="${jars}/ra-deployable-unit.jar" metainfbase="${classes}/META-INF">
+      <resourceadaptorjar destfile="${jars}/ra-deployable-jar.jar" classpath="${classes}/java/ra" extjarxml="oc-resource-adaptor-jar.xml">
+        <fileset dir="${classes}/java/ra" />
+      </resourceadaptorjar>
+    </deployablejar>
+    <delete file="${jars}/ra-deployable-jar.jar" />
+  </target>
+
+  <!-- Deploy RAType DU -->
+  <target name="deploy-ratype" depends="package-ratype, login" description="Deploy RAType DU">
+    <slee-management>
+      <install srcfile="${jars}/ratype-deployable-unit.jar" url="file:${jars}/${ratype.name}-${ratype.version}-${ratype.vendor}-deployable-unit.jar" />
+    </slee-management>
+  </target>
+
+  <!-- Undeploy RAType DU -->
+  <target name="undeploy-ratype" depends="login" description="Undeploy RA DU">
+    <slee-management>
+      <uninstall url="file:${jars}/${ratype.name}-${ratype.version}-${ratype.vendor}-deployable-unit.jar" />
+    </slee-management>
+  </target>
+
+  <!-- Deploy RA DU -->
+  <target name="deploy-ra" depends="deploy-ratype, package-ra, login" description="Deploy RA DU">
+    <slee-management>
+      <install srcfile="${jars}/ra-deployable-unit.jar" url="file:${jars}/${ra.name}-${ra.version}-${ra.vendor}-deployable-unit.jar" />
+      <createraentity entityname="${ra.entity}" properties="${ra.properties}">
+        <component name="${ra.name}" vendor="${ra.vendor}" version="${ra.version}" />
+      </createraentity>
+      <settracerlevel tracername="${ra.entity}" level="${ra.log.level}">
+        <raEntityNotificationSource entityname="${ra.entity}" />
+      </settracerlevel>
+      <activateraentity entityname="${ra.entity}" />
+    </slee-management>
+  </target>
+
+  <!-- Undeploy RA DU -->
+  <target name="undeploy-ra" depends="login" description="Undeploy RA DU">
+    <slee-management>
+      <deactivateraentity entityname="${ra.entity}" />
+      <waitTilRAEntityIsInactive entityname="${ra.entity}" />
+      <removeraentity entityname="${ra.entity}" />
+      <uninstall url="file:${jars}/${ra.name}-${ra.version}-${ra.vendor}-deployable-unit.jar" />
+    </slee-management>
+  </target>
+
+</project>

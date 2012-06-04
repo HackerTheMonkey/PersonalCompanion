@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE sbb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE SBB 1.1//EN" "http://java.sun.com/dtd/slee-sbb-jar_1_1.dtd">
+
+<sbb-jar>
+    <sbb id="@sbb.name@">
+
+        <sbb-name>LocationServerSbb</sbb-name>
+        <sbb-vendor>Opencloud</sbb-vendor>
+        <sbb-version>1.0</sbb-version>
+
+
+        <library-ref>
+            <description></description>
+            <library-name>JSON-Java-API-lib</library-name>
+            <library-vendor>org.json</library-vendor>
+            <library-version>1.0</library-version>
+        </library-ref>
+        
+        <profile-spec-ref>
+            <profile-spec-name>LocationDbProfileSpec</profile-spec-name>
+            <profile-spec-vendor>Opencloud</profile-spec-vendor>
+            <profile-spec-version>1.0</profile-spec-version>
+            <profile-spec-alias>LocationDbProfileSpec</profile-spec-alias>
+        </profile-spec-ref>
+        
+        <sbb-classes>
+            <sbb-abstract-class>
+                <sbb-abstract-class-name>com.opencloud.demo.onenumber.location.LocationServerSbb</sbb-abstract-class-name>
+            </sbb-abstract-class>
+        </sbb-classes>
+
+
+        <event event-direction="Receive" initial-event="True">
+            <event-name>PostRequest</event-name>
+            <event-type-ref>
+                <event-type-name>com.opencloud.slee.resources.http.HttpRequest.POST</event-type-name>
+                <event-type-vendor>OpenCloud</event-type-vendor>
+                <event-type-version>2.1</event-type-version>
+            </event-type-ref>
+            <initial-event-select variable="ActivityContext" />
+        </event>
+
+        <event event-direction="Receive" initial-event="True">
+            <event-name>GetRequest</event-name>
+            <event-type-ref>
+                <event-type-name>com.opencloud.slee.resources.http.HttpRequest.GET</event-type-name>
+                <event-type-vendor>OpenCloud</event-type-vendor>
+                <event-type-version>2.1</event-type-version>
+            </event-type-ref>
+            <initial-event-select variable="ActivityContext" />
+        </event>
+
+        <event event-direction="Receive" initial-event="True">
+            <event-name>DeleteRequest</event-name>
+            <event-type-ref>
+                <event-type-name>com.opencloud.slee.resources.http.HttpRequest.DELETE</event-type-name>
+                <event-type-vendor>OpenCloud</event-type-vendor>
+                <event-type-version>2.1</event-type-version>
+            </event-type-ref>
+            <initial-event-select variable="ActivityContext" />
+        </event>
+        
+        <event event-direction="Receive" initial-event="True">
+            <event-name>PutRequest</event-name>
+            <event-type-ref>
+                <event-type-name>com.opencloud.slee.resources.http.HttpRequest.PUT</event-type-name>
+                <event-type-vendor>OpenCloud</event-type-vendor>
+                <event-type-version>2.1</event-type-version>
+            </event-type-ref>
+            <initial-event-select variable="ActivityContext" />
+        </event>
+       
+    
+    </sbb>
+</sbb-jar>

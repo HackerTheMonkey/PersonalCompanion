@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE oc-sbb-jar PUBLIC "-//Open Cloud Ltd.//DTD JAIN SLEE SBB Extension 1.0//EN" "http://www.opencloud.com/slee/oc-sbb-jar_1_0.dtd">
+
+<oc-sbb-jar>
+  <sbb id="jdbc-location-sbb">
+    <resource-ref>
+      <res-ref-name>jdbc/SipRegistry</res-ref-name>
+      <res-type>javax.sql.DataSource</res-type>
+      <res-auth>Container</res-auth>
+      <res-sharing-scope>Shareable</res-sharing-scope>
+      <res-jndi-name>${location.jdbc.datasource.name}</res-jndi-name>
+    </resource-ref>
+  </sbb>
+</oc-sbb-jar>
+

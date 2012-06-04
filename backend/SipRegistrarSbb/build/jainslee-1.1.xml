@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+
+<project name="Example JAIN SLEE Common Tasks">
+
+  <!-- Load default build properties -->
+  <property file="build/default.properties" />
+
+  <!-- Import common Rhino SLEE tasks -->
+  <import file="${client.home}/etc/common.xml" />
+
+  <!-- Remove compiled classes and jar files -->
+  <target name="clean" description="Remove compiled class and jar files">
+    <delete dir="${jars}" />
+    <delete dir="${classes}" />
+  </target>
+
+  <!-- Setup the project structure -->
+  <target name="init" depends="clean" description="Setup the project structure">
+    <mkdir dir="${jars}" />
+    <mkdir dir="${classes}" />
+    <mkdir dir="${classes}/java" />
+  </target>
+
+  <!-- Rhino Libraries -->
+  <path id="slee.classpath">
+    <fileset dir="${rhino.home}/lib" includes="*.jar" />
+    <fileset dir="${client.home}/lib" includes="*.jar" />
+  </path>
+
+  <!-- Helper target to copy and filter descriptors. 
+       Used by compile target -->
+  <macrodef name="copy-descriptors-and-filter">
+    <attribute name="fromDir" />
+    <attribute name="toDir" />
+    <sequential>
+      <copy toDir="@{toDir}" overwrite="true">
+        <fileset dir="@{fromDir}" includes="**/*.xml" />
+        <filterset>
+          <filtersfile file="build/default.properties" />
+          <filtersfile file="build.local.properties" />
+        </filterset>
+      </copy>
+    </sequential>
+  </macrodef>
+
+  <!-- Start Rhino SLEE -->
+  <target name="start-rhino" description="Convenience target to start Rhino SLEE">
+    <exec dir="${rhino.home}" executable="bash" osfamily="unix" failonerror="true">
+      <arg value="${rhino.unix.start}" />
+      <arg value="${rhino.unix.start.args}" />
+    </exec>
+    <exec dir="${rhino.home}" executable="cmd" osfamily="windows" failonerror="true">
+      <arg value="/c" />
+      <arg value="${rhino.win.start}" />
+      <arg value="${rhino.win.start.args}" />
+    </exec>
+  </target>
+
+  <!-- Stop Rhino SLEE -->
+  <target name="stop-rhino" description="Convenience target to stop Rhino SLEE">
+    <exec dir="${rhino.home}" executable="bash" osfamily="unix" failonerror="true">
+      <arg value="${rhino.unix.stop}" />
+      <arg value="${rhino.unix.stop.args}" />
+    </exec>
+    <exec dir="${rhino.home}" executable="cmd" osfamily="windows" failonerror="true">
+      <arg value="/c" />
+      <arg value="${rhino.win.stop}" />
+      <arg value="${rhino.win.stop.args}" />
+    </exec>
+  </target>
+
+  <!-- Init Management DB -->
+  <target name="init-management-db" description="Convenience target to Init Management DB">
+    <exec dir="${rhino.home}" executable="bash" osfamily="unix" failonerror="true">
+      <arg value="${rhino.unix.initdb}" />
+      <arg value="${rhino.unix.initdb.args}" />
+    </exec>
+    <exec dir="${rhino.home}" executable="cmd" osfamily="windows" failonerror="true">
+      <arg value="/c" />
+      <arg value="${rhino.win.initdb}" />
+      <arg value="${rhino.win.initdb.args}" />
+    </exec>
+  </target>
+
+</project>

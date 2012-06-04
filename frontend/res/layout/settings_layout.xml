@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content"
+	android:scrollbars="vertical"
+>
+	<RelativeLayout
+	  xmlns:android="http://schemas.android.com/apk/res/android"
+	  android:orientation="vertical"
+	  android:layout_width="fill_parent"
+	  android:layout_height="fill_parent">	  
+	  
+	  <ImageView
+	  	android:id="@+id/settingsTitleIconImageView"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:layout_alignParentTop="true"
+	  	android:layout_margin="10px"
+	  	android:src="@drawable/settings"	  		  		  	 	  		  	
+	  />
+	  
+	  <TextView 
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:id="@+id/settingsTitleTextView"
+	  	android:text="SETTINGS"
+	  	android:layout_toRightOf="@id/settingsTitleIconImageView"	
+	  	style="@style/ListItemTitleStyle"
+	  />
+  
+	  <TextView
+		  	android:id="@+id/settingsDescTextView"
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:text="Update the fields in this settings page, click on SAVE SETTINGS button to save your settings."
+		  	android:textSize="20px"
+		  	style="@style/ListItemDescStyle"
+		  	android:layout_alignTop="@id/settingsTitleIconImageView"
+	  />
+	  
+		<TextView
+		  	android:id="@+id/settingsNetworkTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+			style="@style/SeparatorTextViewStyle"
+			android:text="Network Settings"
+			android:layout_below="@id/settingsDescTextView"
+			android:layout_marginTop="10px"
+	    />	 
+	  
+	  <TextView
+		  	android:id="@+id/enterServerIPAddressTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Location server IP address:"
+		  	android:layout_below="@id/settingsNetworkTextView"
+		  	android:layout_marginTop="10px"
+		  	android:textSize="18px"	
+	  />
+	  
+	  	<EditText
+		  	android:id="@+id/enterServerIPAddressEditText"
+		  	android:layout_width="fill_parent"
+		  	android:layout_marginTop="5px"
+		  	android:layout_height="wrap_content"  	
+		  	android:maxLines="1"
+		  	android:layout_below="@id/enterServerIPAddressTextView"		  	
+	  	/>
+	  	
+	  	<TextView
+		  	android:id="@+id/enterPortNumberTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"		  	
+		  	android:text="Port number:"
+		  	android:layout_below="@id/enterServerIPAddressEditText"
+			android:layout_marginTop="10px"
+		  	android:textSize="18px"	
+	  />
+	  
+	  	<EditText
+		  	android:id="@+id/enterPortNumberEditText"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:inputType="number"  	
+		  	android:maxLines="1"
+		  	android:layout_below="@id/enterPortNumberTextView"
+		  	android:layout_marginTop="5px"
+	  	/>
+	  	
+		<TextView
+		  	android:id="@+id/settingsSipSettingsTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+			style="@style/SeparatorTextViewStyle"
+			android:text="SIP Settings"
+			android:layout_below="@id/enterPortNumberEditText"
+			android:layout_marginTop="10px"
+	    />	  	
+	  	<TextView
+		  	android:id="@+id/settingsAddressOfRecordTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"		  	
+		  	android:text="SIP URI: "
+		  	android:layout_below="@id/settingsSipSettingsTextView"
+		  	android:layout_marginTop="10px"
+		  	android:textSize="18px"
+	   />
+	  
+	  	<EditText
+		  	android:id="@+id/settingsAddressOfRecordTextEdit"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:inputType="textUri"
+		  	android:maxLines="1"
+		  	android:layout_marginTop="5px"
+		  	android:layout_below="@id/settingsAddressOfRecordTextView"
+	  	/>
+	  	
+	  	<TextView
+		  	android:id="@+id/settingsLocationSettingsTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+			style="@style/SeparatorTextViewStyle"
+			android:text="Location Sharing Settings"
+			android:layout_below="@id/settingsAddressOfRecordTextEdit"
+			android:layout_marginTop="10px"
+	    />
+	  	
+	  	<TextView
+		  	android:id="@+id/shareYourLocationTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Do you want your location to be available to your other contacts in your social network:"
+		  	android:layout_marginTop="10px"
+		  	android:textSize="18px"
+		  	android:layout_below="@id/settingsLocationSettingsTextView"		  		  	
+	  	/>
+	  	
+	  	
+	  	<RadioGroup
+	  		android:layout_width="fill_parent"
+	  		android:layout_height="wrap_content"
+	  		android:layout_below="@id/shareYourLocationTextView"
+	  		android:id="@+id/settingsShareLocationRadioGroup"
+	  	>  	
+		 	<RadioButton
+	  			android:id="@+id/makeLocationAvailableRadioButton"
+	  			android:text="Make my location available to friends."
+	  			android:checked="true"
+	  			android:textSize="18px"
+	  		/>
+	  		<RadioButton
+	  			android:id="@+id/makeLocationUnAvailableRadioButton"
+	  			android:text="Stop updating my location to friends."
+	  			android:textSize="18px"
+	  		/> 
+	  	</RadioGroup>	  	
+	  	
+	  	<RelativeLayout 
+	  		android:id="@+id/settingsButtonsFrameLayout"	  		
+	  		android:layout_width="fill_parent"
+	  		android:layout_height="wrap_content"
+	  		android:layout_marginTop="20px"
+	  		android:layout_below="@id/settingsShareLocationRadioGroup"
+	  		android:layout_centerInParent="true"	  		
+	  	>
+	  	
+	  	<Button
+	  		android:layout_width="wrap_content"
+	  		android:layout_height="wrap_content"
+	  		android:id="@+id/saveSettingsButton"
+	  		android:text="Save Settings"
+	  		android:layout_marginLeft="90px"	  			  	
+	  	/>
+	  	
+	  	<Button
+	  		android:layout_width="wrap_content"
+	  		android:layout_height="wrap_content"
+	  		android:id="@+id/cancelSettingsButton"
+	  		android:text="      Cancel      "
+	  		android:layout_toRightOf="@id/saveSettingsButton"
+	  		android:onClick="whenButtonIsClicked"	  		
+	  	/>
+	  	
+	  	</RelativeLayout>	
+	  	
+		<TextView
+	  		android:id="@+id/horizontalRuleTextView"
+	  		style="@style/SeparatorTextViewStyle"
+	  		android:layout_width="fill_parent"
+	  		android:layout_height="2px"
+	  		android:layout_above="@id/settingsButtonsFrameLayout"
+	  		android:layout_marginTop="5px"
+	  	/>
+
+	</RelativeLayout>
+</ScrollView>

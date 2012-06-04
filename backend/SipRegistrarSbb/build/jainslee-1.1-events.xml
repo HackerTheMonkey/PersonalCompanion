@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<project name="Example JAIN SLEE Event tasks">
+
+  <target name="compile-events" description="Compile Events classes">
+    <mkdir dir="${classes}/java/events" />
+    <javac srcdir="${src}/events" destdir="${classes}/java/events" source="${jdk.version}" target="${jdk.version}" debug="true" includes="**/*.java">
+      <classpath>
+        <path refid="slee.classpath" />
+        <fileset dir="${lib}" includes="**/*.jar"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <!-- Package and build Events Deployment Unit -->
+  <target name="package-events" depends="compile-events" description="Package and build Events Deployment Unit">
+    <copy-descriptors-and-filter fromDir="${src}" toDir="${classes}" />
+    <mkdir dir="${jars}"/>
+    <deployablejar destfile="${jars}/events-deployable-unit.jar" metainfbase="${classes}/META-INF">
+      <eventjar destfile="${jars}/events-deployable-jar.jar" classpath="${classes}/java/events">
+        <fileset dir="${classes}/java/events"/>
+      </eventjar>
+    </deployablejar>
+    <delete file="${jars}/events-deployable-jar.jar" />
+  </target>
+
+  <!-- Deploy Events DU -->
+  <target name="deploy-events" depends="package-events, login" description="Deploy Events DU">
+    <slee-management>
+      <install srcfile="${jars}/events-deployable-unit.jar" url="file:${jars}/${basedir}/events-deployable-unit.jar" />
+    </slee-management>
+  </target>
+
+  <!-- Undeploy RAType DU -->
+  <target name="undeploy-events" depends="login" description="Undeploy Events DU">
+    <slee-management>
+      <uninstall url="file:${jars}/${basedir}/events-deployable-unit.jar" />
+    </slee-management>
+  </target>
+
+</project>

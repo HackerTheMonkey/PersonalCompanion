@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE sbb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE SBB 1.1//EN" "http://java.sun.com/dtd/slee-sbb-jar_1_1.dtd">
+
+<sbb-jar>
+
+  <sbb>
+    <description>Soap Request SBB</description>
+    <sbb-name>SoapRequestSbb</sbb-name>
+    <sbb-vendor>OpenCloud</sbb-vendor>
+    <sbb-version>1.1</sbb-version>
+
+    <sbb-classes>
+      <sbb-abstract-class>
+        <sbb-abstract-class-name>
+          com.opencloud.slee.example.soap.request.SoapRequestSbb
+        </sbb-abstract-class-name>
+      </sbb-abstract-class>
+    </sbb-classes>
+
+    <event event-direction="Receive">
+      <event-name>SoapResponse</event-name>
+      <event-type-ref>
+        <event-type-name>com.opencloud.slee.resources.soap.SOAPResponse</event-type-name>
+        <event-type-vendor>OpenCloud</event-type-vendor>
+        <event-type-version>2.1</event-type-version>
+      </event-type-ref>
+    </event>
+
+    <event event-direction="Receive" initial-event="True">
+      <event-name>ServiceStarted</event-name>
+      <event-type-ref>
+        <event-type-name>javax.slee.serviceactivity.ServiceStartedEvent</event-type-name>
+        <event-type-vendor>javax.slee</event-type-vendor>
+        <event-type-version>1.1</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+    </event>
+      
+    <env-entry>
+      <env-entry-name>requestURL</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <env-entry-value>http://localhost:@SOAP_LISTEN_PORT@/Request</env-entry-value>
+    </env-entry>
+      
+    <env-entry>
+      <env-entry-name>sendSyncRequest</env-entry-name>
+      <env-entry-type>java.lang.Boolean</env-entry-type>
+      <env-entry-value>false</env-entry-value>
+    </env-entry>
+
+    <resource-adaptor-type-binding>
+      <resource-adaptor-type-ref>
+           <resource-adaptor-type-name>SOAP via SAAJ</resource-adaptor-type-name>
+           <resource-adaptor-type-vendor>OpenCloud</resource-adaptor-type-vendor>
+           <resource-adaptor-type-version>2.1</resource-adaptor-type-version>
+      </resource-adaptor-type-ref>
+      <activity-context-interface-factory-name>
+           slee/resources/soap/acifactory
+      </activity-context-interface-factory-name>
+      <resource-adaptor-entity-binding>
+           <resource-adaptor-object-name>
+               slee/resources/soap/provider
+           </resource-adaptor-object-name>
+           <resource-adaptor-entity-link>
+               soapra
+           </resource-adaptor-entity-link>
+      </resource-adaptor-entity-binding>
+   </resource-adaptor-type-binding>
+
+  </sbb>
+
+</sbb-jar>
+

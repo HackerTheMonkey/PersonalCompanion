@@ -1,0 +1,165 @@
+EVALUATION License Agreement for OpenCloud Limited's Example Project.
+
+OpenCloud Limited is a company incorporate under the laws of England with its 
+principal place of business at 140 Cambridge Science Park, Milton Road, 
+Cambridge CB4 0GF ("OpenCloud" or the "Licensor").
+
+   1. General Description. This 12 month license ("License") contains rights 
+and restrictions associated with use of the accompanying OpenCloud's Example 
+Project including, without limitation, Rhino(tm) binaries, resource adaptor 
+binaries, tool binaries, scripts, example services and the documentation 
+provided (together the "SOFTWARE").
+
+   2. Limited License Grant. OpenCloud grants to YOU a non-exclusive, 
+non-assignable, non-transferable, limited in rights license to install, display 
+and use the SOFTWARE at one location solely for your internal use as defined 
+below. This License commences on the date you first download the SOFTWARE and 
+expires in one year from the date you download the SOFTWARE (the "Evaluation 
+Period") unless you obtain an agreement in writing from OpenCloud specifying 
+some other term. Licensee agrees to take all reasonable precautions to secure 
+the Software from distribution to any third party. At the end of the Evaluation 
+Period, Licensee must cease using the Software and you must destroy or erase 
+all copies of the SOFTWARE. OpenCloud retains all rights that are not 
+expressly granted to Licensee in this License.
+
+      For the purposes of this License, "internal use" means, subject to the 
+other terms and conditions of this License: (a) the installation and operation 
+of the SOFTWARE on Licensee's computer equipment for internal evaluation 
+purposes; and (b) the internal use of the documentation as part of, and 
+provided with, the SOFTWARE.
+
+   3. Use Restriction. This Software is for evaluation purposes only. It may 
+not be reproduced, distributed, developed or used in any production or 
+commercial use environment. Licensee may not deploy the Software or otherwise 
+put it into commercial use. Licensee may not re-distribute the Software in 
+whole or in part, either separately or included with a product, to any other 
+person or publicly accessible machine. Licensee may not create any derivative 
+works based on the SOFTWARE or modify, or attempt to modify the SOFTWARE.
+
+   4. No Service Use. Licensee may not, directly or indirectly, provide as a 
+service, the use of the Software. By way of example, but not as a limitation, 
+this includes providing a networked interface to the SOFTWARE other than for 
+its operational evaluation, permitting the direct or indirect use of the 
+SOFTWARE by third parties or directly or indirectly allowing third parties to 
+access the Software.
+
+   5. Other Restrictions. Software is confidential, copyrighted information of 
+OpenCloud and title to all copies is retained by OpenCloud and/or its Open 
+Clouds, if applicable. Licensee shall not modify, alter, decompile, 
+disassemble, decrypt, extract, or otherwise reverse engineer the SOFTWARE (or 
+attempt to do any of those things). This restriction includes, but is not 
+limited to, modifications attempting to subvert the time-limited restrictions 
+placed upon Software. The SOFTWARE may not be leased, assigned, sublicensed, or 
+made the subject of any charge or security, in whole or in part. The SOFTWARE 
+is not designed or intended for use in on-line control of aircraft, military 
+equipment, air traffic, aircraft navigation or aircraft communications; or in 
+medical, biological, pharmaceutical, or other life-dependent applications; or 
+in the design, construction, operation or maintenance of any nuclear facility. 
+Licensee warrants that it will not use or redistribute the SOFTWARE for any 
+such purposes.
+
+   6. Responsibility of Licensee. Licensee accepts full responsibility for use 
+of the SOFTWARE including, but not limited to, acceptance of full 
+responsibility pursuant to third party software and licensing agreements 
+regarding the use of the SOFTWARE to modify, examine, or otherwise process such 
+third party software.
+
+   7. Benchmark performance or Benchmark testing. The Licensee may not disclose 
+the results of any benchmark testing regarding the SOFTWARE or any of Open 
+Cloud's other products to any third party without OpenCloud's written consent.
+
+   8. Trademarks and Logos. This License does not authorise Licensee to use any 
+name, trademark or logo of OpenCloud. Licensee acknowledges that OpenCloud 
+owns the "OpenCloud" and "Rhino" trademarks, logos and icons. Licensee shall 
+neither take nor permit any action that will delete or obscure OpenCloud's 
+copyright legend on any of the SOFTWARE and related materials.
+
+   9. Warranty of Software Title. OpenCloud warrants that it has the right to 
+license the SOFTWARE it purports to license to Licensee and that such SOFTWARE 
+does not infringe on any patent, copyright or other proprietary right of any 
+person. Subject to clauses 12 and 13 of this License, if any person makes any 
+claim against Licensee asserting such infringement, then the OpenCloud shall, 
+at its sole option, either: (a) defend Licensee against all such claims; or (b) 
+obtain for Licensee the right to continue using such Software.
+
+  10. Disclaimer of Warranty. Except as expressly provided in Paragraph 6 above 
+with respect to title, the SOFTWARE is provided "AS IS," without any warranty 
+or representation of any kind. ALL EXPRESS OR IMPLIED REPRESENTATIONS AND 
+WARRANTIES, STATUTORY OR OTHERWISE, INCLUDING WITHOUT LIMITATION ANY IMPLIED 
+WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR 
+NON-INFRINGEMENT ARE HEREBY EXCLUDED.
+
+  11. Limitation of Liability.
+
+          * TO THE FULLEST EXTENT PERMISSIBLE BY LAW, OPENCLOUD AND ITS OPEN 
+CLOUDS SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE OR ANY THIRD 
+PARTY AS A RESULT OF USING, REPRODUCING OR DISTRIBUTING THE SOFTWARE. WITHOUT 
+LIMITING THE GENERALITY OF THE PRECEDING RESTRICTION, IN NO EVENT WILL OPEN 
+CLOUD OR ITS OPENCLOUDS BE LIABLE FOR ANY DIRECT OR INDIRECT, SPECIAL, 
+CONSEQUENTIAL, PUNITIVE OR OTHER LOSS OR DAMAGES (INCLUDING WITHOUT LIMITATION 
+ANY LOSS OF REVENUE, LOSS OF PROFIT, LOSS OF FUTURE BUSINESS OR LOSS OF DATA) 
+HOWEVER CAUSED OR ARISING EVEN IF OPENCLOUD HAS BEEN ADVISED OF THE 
+POSSIBILITY OF ANY SUCH LOSS OR DAMAGE.
+
+          * Moreover, OpenCloud has no obligation for any claim based on a 
+modified version of the Software or its combination, operation, or use with any 
+product, data, or apparatus not provided, or not expressly approved in writing, 
+by OpenCloud. Furthermore, Licensee shall indemnify, defend and hold harmless 
+OpenCloud from and against any and all claims asserted against OpenCloud 
+based upon any Software modified by Licensee or Software used in combination or 
+operation with any product, data, or apparatus not provided, or not expressly 
+approved in writing, by OpenCloud.
+
+  12. Termination. Licensee may terminate this License at any time by 
+destroying all copies of the SOFTWARE. This License will terminate immediately 
+without notice from OpenCloud if Licensee commits a breach of this License. 
+Upon such termination, Licensee must destroy all copies of the SOFTWARE.
+
+  13. Export Regulations. The SOFTWARE, including technical data, is subject to 
+New Zealand export control laws, and may be subject to export or import 
+regulations in other countries. Licensee agrees to comply strictly with all 
+such regulations and acknowledges that it has the responsibility to obtain 
+licenses to export, re-export, or import Software.
+
+  14. Governing Law/Jurisdiction and Venue. Any action related to this License 
+will be governed by New Zealand law. No choice of law rules of any jurisdiction 
+will apply. All disputes arising under this Agreement shall be submitted to 
+final and binding arbitration in New Zealand or such other location as agreed 
+between the parties. Notwithstanding the foregoing, OpenCloud reserves the 
+right to bring any action for injunctive or other equitable relief in an 
+appropriate case and, for purposes thereof, Licensee consents to the personal 
+jurisdisction and venue of the courts of New Zealand.
+
+  15. Severability. If any of the above provisions are held to be in violation 
+of applicable law, void, or unenforceable in any jurisdiction, then such 
+provisions are here with waived to the extent necessary for the License to be 
+otherwise enforceable in such jurisdiction. However, if in OpenCloud's opinion 
+deletion of any provisions of the License by operation of this paragraph 
+unreasonably compromises the rights or increase the liabilities of OpenCloud 
+or its OpenClouds, OpenCloud reserves the right to terminate the License at 
+any time.
+
+  16. No Waiver.No waiver by OpenCloud of any breach of any provision of this 
+Agreement shall be effective unless in a writing signed by OpenCloud. No 
+waiver shall constitute a continuing waiver unless expressly provided in the 
+writing signed by OpenCloud.
+
+  17. Assignment. This License may be assigned by OpenCloud without the 
+consent of Licensee. This License may not be assigned by Licensee without the 
+prior written consent of OpenCloud.
+
+  18. Independent Contractors. The parties to this License are independent 
+contractors, each in full control of its own business, employees and expenses. 
+Nothing in this License will create, constitute or evidence any partnership, 
+joint venture, agency, trust or employer/employee relationship between the 
+parties. This License places neither party in the control or direction of the 
+other, and neither party is authorized to act as the principal or agent for the 
+other. No party will have the authority to act for, or incur any obligation on 
+behalf of, any other party except as expressly provided in this License.
+
+  19. Entire Agreement. This License constitutes the entire agreement between 
+the parties respecting the subject matter hereof and thereof, and supersedes 
+all previous proposals, negotiations, representations, warranties, commitments, 
+writings and communications between parties. The terms of this License shall 
+prevail notwithstanding any variance with the terms of any purchase order or 
+any other document submitted by Licensee. 

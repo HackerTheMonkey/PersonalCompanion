@@ -1,0 +1,68 @@
+---------------------------------------------------------------------------------------------------
+                                        OpenCloud (C) 2008
+
+                               OpenCloud Example JAIN SLEE Project
+                               Version 1.0.0
+
+                                     developer.opencloud.com
+---------------------------------------------------------------------------------------------------
+
+
+This directory contains an example project to compile, package and deploy JAIN SLEE 1.1 Components 
+on OpenCloud's Rhino SLEE 2.x.
+
+The purpose of the project is to allow a developer to start developing JAIN SLEE components without 
+the hassle of creating the project structure and Ant build scripts. The current directory structure 
+only allows to have a component in the project per each Component Type and is NOT integrated with 
+the OpenCloud XDoclet tool.
+
+You can base your build environment in this project but bare in mind that the project is provided 
+as an example only. You should careful review this build process before you install it in you 
+environment. 
+
+For more information refer to:
+https://developer.opencloud.com/devportal/display/OCDEV/Ant+Development
+
+Common Directory Structure (this project may not include all files):
+|-- LICENSE
+|-- README
+|-- build.xml
+|-- buil.local.properties 
+|-- build
+|   |-- default.properties
+|   |-- jainslee-1.1-events.xml
+|   |-- jainslee-1.1-library.xml
+|   |-- jainslee-1.1-profile-spec.xml
+|   |-- jainslee-1.1-ra.xml
+|   |-- jainslee-1.1-sbb.xml
+|   `-- jainslee-1.1.xml
+|-- classes
+    `-- Temporary compiled classes
+|-- jars
+    `-- Deployment units
+|-- lib
+    `-- JAR files necessary during compile stage and that may be included in the library jar
+`-- src
+    |-- META-INF
+    |   `-- JAIN SLEE and OpenCloud's XML descriptors (e.g. sbb-jar.xml and oc-sbb-jar.xml)
+    |-- events
+    |   `-- Source Java Files
+    |-- library
+    |   `-- Source Java Files
+    |-- profile-spec
+    |   `-- Source Java Files
+    |-- ra
+    |   `-- Source Java Files
+    |-- ratype
+    |   `-- Source Java Files
+    `-- sbb
+        `-- Source Java Files
+        
+Instructions:
+ - Setup you development environment. Refer to the Developer's Portal for more information.
+ - Execute the command 'ant -projecthelp' to see the available Ant targets.
+ - As an initial test, start Rhino and then deploy the example with the command 'ant deploy'.
+
+Support is *only* provided trough:
+ - OpenCloud Developer's Portal - developer.opencloud.com/devportal
+ - OpenCloud Developer's Forum - developer.opencloud.com/forum

@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <title>Lazy Parsing</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <link href="css/diameter.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+
+<body>
+
+<div id="wrapper">
+    <div id="header"><a href="http://www.opencloud.com/" title="OpenCloud">OpenCloud</a></div>
+
+    <div id="content">
+        <div id="content-top"></div>
+
+         <div id="subnav-column" class="diameter">
+            <ul class="subnav">
+                <li><a href="index.html" title="SIP Connectivity Pack" id="diameter">SIP Connectivity Pack</a></li>
+            </ul>
+            <ul class="subnav-diameter">
+                <li><a href="release-notes.html" title="Release Notes" id="release-notes">Release Notes</a></li>
+                <li><a href="getting-started.html" title="Getting Started" id="getting-started">Getting Started</a></li>
+                <li><a href="configuration.html" title="Configuration" id="configuration">RA Configuration</a></li>
+                <li>
+                    <a href="features.html" title="Features" id="features">RA Features</a>
+                    <!--<strong>RA Features</strong>-->
+                    <ul class="subnav-diameter">
+                        <li><a href="features-clustering.html" title="Clustering" id="clustering">Cluster Support</a></li>
+                        <li><a href="features-ftdialogs.html" title="FTDialogs" id="ftdialogs">Replicated Dialogs</a></li>
+                        <li><a href="features-forking.html" title="Forking" id="forking">Forking</a></li>
+                        <li>
+                            <strong>Lazy Parsing</strong>
+                        </li>
+                        <li><a href="features-outbound.html" title="Outbound" id="outbound">Outbound Connections</a></li>
+                    </ul>
+                </li>
+                <li><a href="ratype.html" title="RA Type" id="ratype">RA Type Overview</a></li>
+                <li><a href="examples.html" title="Examples" id="examples">Example Applications</a></li>
+            </ul>
+        </div>
+
+        <div id="content-column">
+
+            <div id="content-column-text">
+                <div class="h1-header">
+                    <h1>Lazy Parsing</h1>
+                </div>
+
+                <h2>Introduction</h2>
+
+                <p>The SIP RA uses a lazy parser to parse the headers in incoming SIP messages. This means that
+                headers are not parsed until they are needed, either internally within the RA or by the
+                application accessing a header.</p>
+
+                <p>Critical headers such as Call-ID, CSeq and Via will always be parsed by the RA, as these are
+                essential to correct operation of the protocol. However most other headers need not be parsed
+                at all until accessed by an application. This is a performance benefit, and can also aid
+                interoperability with user agents that may not strictly follow SIP syntax.</p>
+
+                <h2>Lazy Parsing Failures</h2>
+
+                <p>If an application calls
+                <a href="api/jain-sip/javax/sip/message/Message.html#getHeader(java.lang.String)">Message.getHeader()</a>, 
+                and the RA is unable to parse the header, a
+                <a href="api/ocsip-ratype/com/opencloud/javax/sip/LazyParsingException.html">LazyParsingException</a> will 
+                be thrown. This is an unchecked exception. In this case, an application might want to get the unparsed
+                header value so that it can parse the header itself. This might be required when communicating with a
+                user agent that is known to have bugs in SIP syntax.</p>
+
+                <p>An application can retrieve the unparsed value of a header by casting the
+                <a href="api/jain-sip/javax/sip/message/Message.html">Message</a> object
+                to a <a href="api/ocsip-ratype/com/opencloud/javax/sip/LazyParsedMessage.html">LazyParsedMessage</a>,
+                and calling <a href="api/ocsip-ratype/com/opencloud/javax/sip/LazyParsedMessage.html#getUnparsedHeaderValue(java.lang.String)">getUnparsedHeaderValue()</a>.
+                This returns the string value of the header, which the application can parse itself. If the
+                header is a multi-value header, the <a href="api/ocsip-ratype/com/opencloud/javax/sip/LazyParsedMessage.html#getUnparsedHeaderValues(java.lang.String)">getUnparsedHeaderValues()</a>
+                method should be used, which returns an array of strings.</p>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">
+        <ul>
+            <li></li>
+        </ul>
+
+        <p class="copyright">&copy; OpenCloud Limited 2007-2010</p>
+    </div>
+</div>
+</body>
+</html>

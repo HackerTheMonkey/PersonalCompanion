@@ -1,0 +1,281 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <title>Persistent Outbound Connections</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <link href="css/diameter.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+
+<body>
+
+<div id="wrapper">
+    <div id="header"><a href="http://www.opencloud.com/" title="OpenCloud">OpenCloud</a></div>
+
+    <div id="content">
+        <div id="content-top"></div>
+
+        <div id="subnav-column" class="diameter">
+            <ul class="subnav">
+                <li><a href="index.html" title="SIP Connectivity Pack" id="diameter">SIP Connectivity Pack</a></li>
+            </ul>
+            <ul class="subnav-diameter">
+                <li><a href="release-notes.html" title="Release Notes" id="release-notes">Release Notes</a></li>
+                <li><a href="getting-started.html" title="Getting Started" id="getting-started">Getting Started</a></li>
+                <li><a href="configuration.html" title="Configuration" id="configuration">RA Configuration</a></li>
+                <li>
+                    <a href="features.html" title="Features" id="features">RA Features</a>
+                    <!--<strong>RA Features</strong>-->
+                    <ul class="subnav-diameter">
+                        <li><a href="features-clustering.html" title="Clustering" id="clustering">Cluster Support</a></li>
+                        <li><a href="features-ftdialogs.html" title="FTDialogs" id="ftdialogs">Replicated Dialogs</a></li>
+                        <li><a href="features-forking.html" title="Forking" id="forking">Forking</a></li>
+                        <li><a href="features-lazyparsing.html" title="Lazy Parsing" id="lazyparsing">Lazy Parsing</a></li>
+                        <li>
+                            <!--<a href="features-outbound.html" title="Outbound" id="outbound">Outbound Connections</a>-->
+                            <strong>Outbound Connections</strong>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="ratype.html" title="RA Type" id="ratype">RA Type Overview</a></li>
+                <li><a href="examples.html" title="Examples" id="examples">Example Applications</a></li>
+            </ul>
+        </div>
+
+        <div id="content-column">
+
+            <div id="content-column-text">
+                <div class="h1-header">
+                    <h1>Persistent Outbound Connections</h1>
+                </div>
+
+
+                <p>
+                    This page describes the OpenCloud SIP RA's support for the draft RFC,
+                    <a href="http://tools.ietf.org/html/draft-ietf-sip-outbound-03.txt">draft-ietf-sip-outbound-03</a>.
+                </p>
+                
+                <h2>Overview</h2>
+
+                <p>The draft RFC describes how a SIP client may initiate a persistent SIP connection to a SIP proxy server
+                on the other side of a firewall/NAT. Using the procedures in the RFC, the connection is kept open, and
+                the proxy is able to route incoming SIP messages over the connection created by the client. In this way,
+                clients that are behind a firewall/NAT can receive calls, even though their IP address is not externally
+                visible.</p>
+
+                <p>The SIP RA has been enhanced to support this draft RFC. The following sections describe the
+                procedures that must be used on the client and server sides to setup and maintain persistent connections
+                through a firewall.</p>
+
+                <p>The SIP RA implements the <a href="http://jcp.org/en/jsr/detail?id=32">JAIN SIP 1.2</a> API.
+                The JAIN SIP API does not have any notion of "connections", so applications cannot manipulate a connection
+                object. The support for the draft RFC has been implemented so that applications still use the JAIN SIP API,
+                and connections are setup and torn down using specially-formed REGISTER requests, as described in the
+                following sections.</p>
+
+                <h2>Procedures at the Client</h2>
+
+                <h3>Initiating a persistent connection</h3>
+
+                <p>The client initiates a persistent connection to a server by registering as described in the draft RFC,
+                passing "+sip.instance" and "reg-id" parameters in the Contact header of the REGISTER request.</p>
+
+                <p>The instance parameter must uniquely identify this user agent, and must be persistent across reboots.
+                <i>It is up to the user agent to derive this instance identifier</i>. The draft RFC recommends using a UUID.</p>
+
+                <p>The "reg-id" parameter is an integer and identifies the connection to a particular endpoint. If the
+                client wishes to initiate more than one persistent connection to the same host, each REGISTER request
+                must specify a different reg-id. An example REGISTER message is shown below:</p>
+
+                <p>
+                    <code>REGISTER sip:ext-proxy.example.com:5060;transport=tcp SIP/2.0</code><br>
+                    <code>Via: SIP/2.0/TCP 192.168.0.100:5060;branch=z9hG4bKf-EmiaQUlzbxheKMdLiiaA</code><br>
+                    <code>From: &lt;sip:client@example.com&gt;</code><br>
+                    <code>To: &lt;sip:client@example.com&gt;</code><br>
+                    <code>Call-ID: oNSYps1sGnhIHM2wwt329A</code><br>
+                    <code>CSeq: 1 REGISTER</code><br>
+                    <code>Max-Forwards: 70</code><br>
+                    <code>Contact: &lt;sip:192.168.0.100:5060;transport=tcp&gt;;</code><br>
+                    <code>&nbsp;&nbsp;&nbsp;&nbsp;<b>+sip.instance</b>="&lt;urn:uuid:00000000-0000-0000-0000-000000000001&gt;";</code><br>
+                    <code>&nbsp;&nbsp;&nbsp;&nbsp;<b>reg-id</b>=1;expires=3600</code><br>
+                    <code>Content-Length: 0</code><br>
+                </p>
+
+                <p>When the client attempts to send a REGISTER in this way, the SIP RA detects that a new persistent
+                connection is required, and opens a connection to the server. If a successful response is received,
+                then the stack marks the connection as persistent, and will automatically perform the heartbeat and
+                reconnection procedures specified by the draft RFC. If the registration response is not successful, or
+                times out, and alarm is raised and the RA will initiate the reconnection procedures, and will try to
+                reconnect and register again.</p>
+
+                <h3>Sending requests on a persistent connection</h3>
+
+                <p>To send requests on the connection, the client only has to ensure that the request is routed to the
+                same server that handled the REGISTER. This can be achieved by inserting a Route header in any request.
+                For example, if the client had registered as above, it would use the Route header:</p>
+                <p>
+                    <code>Route: &lt;sip:ext-proxy.example.com:5060;transport=tcp;lr&gt;</code>
+                </p>
+
+                <p>If the RA sees that a request is destined for a server that it already has a persistent connection for,
+                then it will send the request on that connection. If there are several persistent connections open to the
+                server, then the most recently created one is used, as specified by the draft RFC.</p>
+
+                <p>If a persistent connection has gone down, the RA will automatically attempt to reconnect at
+                intervals defined in the RFC (normally starting at 30 seconds). If a client tries to send a request on
+                the connection and it is not currently available, then a SipException will be thrown.</p>
+
+                <h3>Re-registering</h3>
+
+                <p>The RA will automatically re-register in the case of a connection failure, but the application
+                is still responsible for re-registering before the previous registration expires. When the initial
+                registration response is received, the Contact header will contain an "expires" parameter specifying
+                the lifetime of the registration, in seconds. The application must set the appropriate timers so
+                that it re-registers before the registration is due to expire.</p>
+
+                <h3>Connection Events</h3>
+
+                <p>After establishing a persistent connection as above, an SBB client may attach to a
+                <a href="api/ocsip-ratype/com/opencloud/javax/sip/PersistentOutboundConnection.html/">PersistentOutboundConnection</a>
+                activity to be notified when the underlying connection goes up and down. See the example
+                PersistentOutboundConnectionSbb.</p>
+
+                <h3>Heartbeats</h3>
+
+                <p>The RA uses the STUN heartbeat mechanism to check that the server is still responding, and
+                also to check if the NAT mapping has changed. If a persistent connection is idle for 90 seconds,
+                a STUN bind request is sent. If no response is received, or if the response indicated that the
+                NAT mapping has changed, then the RA will automatically close the connection and begin
+                reconnection procedures. No application involvement is required for handling the STUN messages,
+                this is done entirely by the RA.</p>
+
+                <h3>Tearing down a persistent connection</h3>
+
+                <p>Tearing down a persistent connection is done by sending an unregister request. This is a REGISTER
+                request as above, but with an expires value of zero. When this request is sent on a persistent connection,
+                the RA knows it can close the connection, and it does not begin reconnection procedures, and no
+                alarm is raised.</p>
+
+                <p>If the unregister request is sent when the connection is already down, the RA will treat this
+                as a signal that the connection should be closed permanently and no more reconnection attempts will
+                be made. Any alarms associated with the connection are cleared. The RA will pass an OK response
+                back up to the application.</p>
+
+                <h3>Example</h3>
+
+                <p>An example service is included which creates and tears down a persistent connection, using the
+                REGISTER procedures above. See <code>PersistentOutboundConnectionSbb.java</code> in
+                <code>src/com/opencloud/slee/services/sip/persistent</code>. The Ant target "deploy-persist-conn"
+                will deploy and activate the service.</p>
+
+                <p>The service will attempt to register when it is activated. The server it tries to register with
+                is specified in the <code>sip.properties</code> variable <code>PERSISTENT_REGISTRAR_URI</code>. By default
+                this is localhost:5080, but should be changed to the URI of another SLEE running the example
+                registrar service.</p>
+
+                <h3>Alarms</h3>
+
+                <table>
+                <tr><td>Alarm Type:</td><td><b>sip.persistent.connectionDown</b></td></tr>
+                <tr><td>Description:</td><td>Raised when a single connection to an endpoint fails.
+                Cleared automatically when the connection is restored, or if the connection is closed
+                permanently using an unregister request.</td></tr>
+                <tr><td>Source:</td><td>"sip.transport.persistent.outgoing.&lt;endpoint&gt;.&lt;reg-id&gt;"</td></tr>
+                <tr><td>Level:</td><td>MINOR</td></tr>
+                <tr><td>Message:</td><td>Connection to &lt;endpoint&gt; down, reg-id=&lt;reg-id&gt;</td></tr>
+                </table>
+                <p>
+                <table>
+                <tr><td>Alarm Type:</td><td><b>sip.persistent.allConnectionsDown</b></td></tr>
+                <tr><td>Description:</td><td>Raised when the SIP RA has no persistent outbound connections to an endpoint.
+                Cleared automatically when at least one connection is restored, or all connections have been unregistered.</td></tr>
+                <tr><td>Source:</td><td>"sip.transport.persistent.outgoing.&lt;endpoint&gt;"</td></tr>
+                <tr><td>Level:</td><td>MAJOR</td></tr>
+                <tr><td>Message:</td><td>No persistent connections available to &lt;endpoint&gt;</td></tr>
+                </table>
+
+                <h2>Procedures at the Server</h2>
+
+                <h3>X-Flow-ID Header</h3>
+
+                <p>The SIP RA uses a proprietary header, "X-Flow-ID", to indicate to server applications which incoming "flow"
+                (connection) a request was received on. The header contains a string token which uniquely identifies an
+                incoming flow on this server. The header is only set on incoming requests when the request is received on an
+                existing presistent incoming flow, or it is an initial REGISTER request which is creating a new incoming flow.</p>
+
+                <p>Similarly, if an application wants to send a request on a particular incoming flow, it can set the "X-Flow-ID"
+                header in the request before sending it. The RA will see the header and attempt to send on the flow
+                indicated by the Flow-ID, throwing an exception if the flow is not present.</p>
+
+                <p>The RA will always remove the X-Flow-ID header before the request is sent on the network.</p>
+
+                <h3>Registrar</h3>
+
+                <p>Registrar applications must check incoming REGISTERs to see if the X-Flow-ID header is present, and if so,
+                save the Flow-ID along with the other registration details. This is so that a proxy application can lookup
+                the registration and route requests to the correct flow.</p>
+
+                <p>The example RegistrarSbb has been updated to save the flow, along with the other registration details.
+                See <code>RegistrarSbb.java</code> in <code>src/com/opencloud/slee/services/sip/registrar</code>.</p>
+
+                <h3>Proxy</h3>
+
+                <p>Proxy applications must be prepared to route requests to particular flows. When a proxy looks up a
+                user's registration details, it can get the Flow-ID (if present), and insert an X-Flow-ID header so
+                the RA will send the request on the correct flow.</p>
+
+                <p>If the proxy is a record-routing proxy, ie. it will see all requests in a dialog, then the proxy
+                must take care to record-route correctly so that subsequent requests in the dialog will be sent on
+                the correct flow. The draft RFC is not specific about how this is done, but one procedure that
+                works is the "double record-route".</p>
+
+                <p>When processing an initial request, the proxy must check if the request was received on an incoming
+                flow, or is destined for an incoming flow. If either is true, the proxy inserts <i>two</i> Record-Route headers.
+                Each header may contain a Flow-ID. Later, when one of the parties in the dialog sends a subsequent request,
+                it will arrive at the proxy with 2 Route headers, denoting the incoming and/or outgoing flows. The proxy
+                removes both Route headers, and sends the request out on the flow specified in the 2nd Route header.</p>
+
+                <p>The example ProxySbb has been updated to retrieve flow information and use the double record-routing
+                procedure described above. See <code>ProxyRouter.java</code> in <code>src/com/opencloud/slee/services/sip/proxy</code>.</p>
+
+                <h3>Server-Initiated Connection Close</h3>
+
+                <p>The server may forcibly close a persistent incoming connection at any time, by using the proprietary API call
+                <a href="api/ocsip-ratype/com/opencloud/javax/sip/slee/OCSleeSipProvider.html#closeInboundFlow(java.lang.String)">OCSleeSipProvider.closeInboundFlow()</a>.
+                This method takes a string parameter, which is the value of the X-Flow-ID header, received with all requests on the
+                connection.</p>
+
+                <h3>Abnormal or Client-Initiated Connection Close</h3>
+
+                <p>If the connection is closed by the client or is dropped for any reason, other than a call to
+                <a href="api/ocsip-ratype/com/opencloud/javax/sip/slee/OCSleeSipProvider.html#closeInboundFlow(java.lang.String)">closeInboundFlow()</a>
+                as above, the server's RA will generate an un-REGISTER request and pass this up to the SLEE, so that registrar
+                applications can remove the registration associated with that connection. The request will contain the correct
+                address-of-record, contact address, instance-id and reg-id for the connection, and will have an "expires" value
+                of zero. The response to this request is handled internally, and will not be transmitted over the network.</p>
+
+                <p>Note that if the client unregisters normally and closes the connection, the stack will still generate this request,
+                but this will have no effect since the registration would have already been removed.</p>
+
+                <p>If the connection is closed by the server using
+                <a href="api/ocsip-ratype/com/opencloud/javax/sip/slee/OCSleeSipProvider.html#closeInboundFlow(java.lang.String)">closeInboundFlow()</a>,
+                the un-REGISTER request is not generated, it is assumed that the application will be responsible for
+                cleaning up registration state for that connection.</p>
+                
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">
+        <ul>
+            <li></li>
+        </ul>
+
+        <p class="copyright">&copy; OpenCloud Limited 2007-2010</p>
+    </div>
+</div>
+</body>
+</html>

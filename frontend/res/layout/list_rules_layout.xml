@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+>
+  
+  <RelativeLayout
+		  xmlns:android="http://schemas.android.com/apk/res/android"
+		  android:orientation="vertical"
+		  android:layout_width="fill_parent"
+		  android:layout_height="fill_parent"
+		>
+		
+		  <ImageView
+		  	android:id="@+id/listRulesTitleIconImageView"
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:layout_alignParentTop="true"
+		  	android:layout_margin="10px"
+		  	android:src="@drawable/list_rules"		  	 	  		  	
+		  />
+	  
+		  <TextView 
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:id="@+id/listRulesTitleTextView"
+		  	android:text="List CMRs"
+		  	android:layout_toRightOf="@id/listRulesTitleIconImageView"	
+		  	style="@style/ListItemTitleStyle"
+		  />
+		  
+		  <TextView
+		  	android:id="@+id/listRuleDescTextView"
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:text="List the currently configured Call Management Rules (CMRs)"
+		  	android:textSize="20px"
+		  	style="@style/ListItemDescStyle"
+		  	android:layout_alignTop="@id/listRulesTitleIconImageView"
+	  	 />					
+		
+		 <TextView
+		  	android:id="@+id/cmr1TextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Home CMR"
+		  	android:textSize="20px"
+		  	style="@style/ListItemDescStyle"
+		  	android:layout_below="@id/listRuleDescTextView"
+		  	android:layout_marginTop="1px"		  	
+	  	 />
+	  	 <TextView
+		  	android:id="@+id/cmr2TextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Office CMR"
+		  	android:textSize="20px"
+		  	style="@style/ListItemDescStyle"
+		  	android:layout_below="@id/cmr1TextView"
+		  	android:layout_marginTop="1px"		  	
+	  	 />
+	  	 <TextView
+		  	android:id="@+id/cmr3TextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Holiday CMR"
+		  	android:textSize="20px"
+		  	style="@style/ListItemDescStyle"
+		  	android:layout_below="@id/cmr2TextView"
+		  	android:layout_marginTop="1px"		  	
+	  	 />
+		
+		</RelativeLayout>
+				
+
+  
+</LinearLayout>

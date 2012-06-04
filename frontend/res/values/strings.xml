@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rhino Companion</string>
+    <string name="callHandlingPrompt">Select the desired call handling method:</string>
+    <string name="callRingingPrompt">Select the desired call ringing method:</string>
+    <string name="editCallMgmtRulesLabelsTextColor">#110066</string>
+    <string name="editCallMgmtRulesLabelsBackgroundColor">#110066</string>
+	
+	<!-- Create a string array that contains the menu options for the call handling method -->
+	<string-array name="callHandlingOptionsStringArray">
+		<item>Accept Call</item>
+		<item>Reject Call</item>
+		<item>Ignore Call on this device</item>
+		<item>Ignore Call (all devices)</item>
+		<item>Redirect to Voice Mail</item>
+	</string-array>
+	<!-- Create a string array that contains the menu options for the call ringing type -->
+	<string-array name="callRingingOptionsStringArray">
+		<item>Sequential</item>
+		<item>Parallel (all devices)</item>
+		<item>Sequential by Best Coverage</item>
+		<item>Sequential by Recently Registered</item>
+		<item>Sequential by Recently Used</item>
+		<item>Only Best Network Coverage</item>
+		<item>Only Most Recently Registered</item>
+		<item>Only Most Recently Used</item>
+	</string-array>	
+	
+	<string name="aboutApp">Thank you for taking the time to evaluate this app.
+  	\n\nRhino Companion provides the user with the ability to configure a range of personalisation options (Companion Calling Rules) relating to their group of friends or work colleagues.
+  	\n\nCompanion Calling Rules are stored in the network inside OpenCloud Rhino Telecom Application Server and used when telecom services are initiated. Rhino Companion uses an HTTP data channel to fetch and save the Companion Calling Rules.
+  	\n\nRhino Companion also provides presence and location capabilities. Users can specify various locations within the Companion Calling Rules, so making the rules location-dependent.\n\n</string>
+  	
+  	<string name="aboutCompany">OpenCloud, formed in 2000 is a privately funded company. It provides the telecommunications industry with a real-time Telecom Application Server (TAS) for agile development, deployment and efficient management of person-to-person communications services across current and next generation network technology.
+  	\n\nOpenCloud is headquartered in Cambridge, United Kingdom. In addition, OpenCloud has offices in:
+  	\n * Wellington, New Zealand (Research, Development and Support);
+    \n * Jakarta, Indonesia (Sales, Marketing and Professional Services);
+    \n * Singapore (Sales, Marketing and Professional Services);
+    \n* Madrid, Spain (Sales, Marketing, Professional Services and Support)
+    \n\nThe company has received investment from its employees, shareholders and institutional investors; No. 8 Ventures, Advent Venture Partners and Nokia Siemens Networks.
+    \n\nOpenCloud also offers specialized consulting, implementation, training and 24/7 support services for customers worldwide.\n\n</string>
+     
+</resources>

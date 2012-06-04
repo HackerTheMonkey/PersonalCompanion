@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE service-xml PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE Service 1.1//EN" "http://java.sun.com/dtd/slee-service_1_1.dtd">
+
+<service-xml>
+  <!-- The Presence "service" is actually implemented by several services -->
+  <service id="presence">
+    <service-name>${presence.service.name}</service-name>
+    <service-vendor>${presence.service.vendor}</service-vendor>
+    <service-version>${presence.service.version}</service-version>
+    <root-sbb>
+      <sbb-name>${presence.sbb.name}</sbb-name>
+      <sbb-vendor>${presence.sbb.vendor}</sbb-vendor>
+      <sbb-version>${presence.sbb.version}</sbb-version>
+    </root-sbb>
+    <default-priority>0</default-priority>
+  </service>
+
+  <service id="notify">
+    <service-name>${notify.service.name}</service-name>
+    <service-vendor>${notify.service.vendor}</service-vendor>
+    <service-version>${notify.service.version}</service-version>
+    <root-sbb>
+      <sbb-name>${notify.sbb.name}</sbb-name>
+      <sbb-vendor>${notify.sbb.vendor}</sbb-vendor>
+      <sbb-version>${notify.sbb.version}</sbb-version>
+    </root-sbb>
+    <default-priority>0</default-priority>
+  </service>
+
+  <service id="publish">
+    <service-name>${publish.service.name}</service-name>
+    <service-vendor>${publish.service.vendor}</service-vendor>
+    <service-version>${publish.service.version}</service-version>
+    <root-sbb>
+      <sbb-name>${publish.sbb.name}</sbb-name>
+      <sbb-vendor>${publish.sbb.vendor}</sbb-vendor>
+      <sbb-version>${publish.sbb.version}</sbb-version>
+    </root-sbb>
+    <default-priority>0</default-priority>
+  </service>
+</service-xml>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <!-- Do not use Project Properties customizer when editing this file manually. -->
+            <name>SipRegistrarSbb</name>
+            <properties/>
+            <folders>
+                <source-folder>
+                    <label>src\sbb</label>
+                    <type>java</type>
+                    <location>src/sbb</location>
+                </source-folder>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <target>package-sbb</target>
+                </action>
+                <action name="clean">
+                    <target>clean</target>
+                </action>
+                <action name="rebuild">
+                    <target>clean</target>
+                    <target>package-sbb</target>
+                </action>
+            </ide-actions>
+            <view>
+                <items>
+                    <source-folder style="packages">
+                        <label>src\sbb</label>
+                        <location>src/sbb</location>
+                    </source-folder>
+                    <source-file>
+                        <location>build.xml</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="rebuild"/>
+                    <ide-action name="clean"/>
+                </context-menu>
+            </view>
+            <subprojects/>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
+            <compilation-unit>
+                <package-root>src/sbb</package-root>
+                <classpath mode="compile">lib/http-events-2.1.jar;lib/http-ratype-2.1.jar;lib/slee-1.1.jar;lib/jsip_api_v1.2.jar;lib/oc-javax-sip-2.1.jar;lib/jsip-ratype-classes-1.2.jar;lib/location-database-profile-spec-jar.jar;lib/jain-sip-ri-1.2.159.jar;lib/jsip_api_v1.2.jar</classpath>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+        </java-data>
+    </configuration>
+</project>

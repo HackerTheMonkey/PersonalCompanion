@@ -1,0 +1,391 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE sbb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE SBB 1.1//EN" "http://java.sun.com/dtd/slee-sbb-jar_1_1.dtd">
+
+<sbb-jar>
+
+  <sbb id="presence">
+    <description>SIP Event State Compositor SBB</description>
+    <sbb-name>${presence.sbb.name}</sbb-name>
+    <sbb-vendor>${presence.sbb.vendor}</sbb-vendor>
+    <sbb-version>${presence.sbb.version}</sbb-version>
+
+    <sbb-classes>
+
+      <sbb-abstract-class>
+        <sbb-abstract-class-name>
+          com.opencloud.slee.services.sip.presence.EventStateCompositorSbb
+        </sbb-abstract-class-name>
+      </sbb-abstract-class>
+      
+      <sbb-local-interface>
+        <description>
+          Used by other SBBs to lookup presence info
+        </description>
+        <sbb-local-interface-name>
+          com.opencloud.slee.services.sip.presence.PresenceService
+        </sbb-local-interface-name>
+      </sbb-local-interface>
+      
+      <sbb-activity-context-interface>
+        <description>
+          Used to keep track of the presence information for a given presentity
+        </description>
+        <sbb-activity-context-interface-name>
+          com.opencloud.slee.services.sip.presence.PresenceACI
+        </sbb-activity-context-interface-name>
+      </sbb-activity-context-interface>
+		
+    </sbb-classes>
+    
+    
+    <event event-direction="Receive" initial-event="True">
+      <event-name>PresentityStateChangeEvent</event-name>
+      <event-type-ref>
+        <event-type-name>com.opencloud.slee.services.sip.presence.PresentityStateChangeEvent</event-type-name>
+        <event-type-vendor>OpenCloud</event-type-vendor>
+        <event-type-version>1.1</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+    </event>
+    
+    <event event-direction="Fire">
+      <event-name>NotifyStateChangeEvent</event-name>
+      <event-type-ref>
+        <event-type-name>com.opencloud.slee.services.sip.presence.NotifyStateChangeEvent</event-type-name>
+        <event-type-vendor>OpenCloud</event-type-vendor>
+        <event-type-version>1.0</event-type-version>
+      </event-type-ref>
+    </event>
+    
+    <!-- EXPIRY TIMER -->
+
+    <event event-direction="Receive" initial-event="True">
+      <event-name>ExpiryTimer</event-name>
+      <event-type-ref>
+        <event-type-name>javax.slee.facilities.TimerEvent</event-type-name>
+        <event-type-vendor>javax.slee</event-type-vendor>
+        <event-type-version>1.0</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+      <initial-event-selector-method-name>checkTimerEvent</initial-event-selector-method-name>
+    </event>
+    
+    <activity-context-attribute-alias>
+    	<attribute-alias-name>PresenceInformation</attribute-alias-name>
+    	<sbb-activity-context-attribute-name>presenceInformation</sbb-activity-context-attribute-name>
+    </activity-context-attribute-alias>
+
+    <env-entry>
+      <env-entry-name>sipProviderName</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <env-entry-value>${SIP_PROVIDER}</env-entry-value>
+    </env-entry>
+
+    <env-entry>
+      <env-entry-name>sipACIFactoryName</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <env-entry-value>${SIP_ACIFACTORY}</env-entry-value>
+    </env-entry>
+        
+    <resource-adaptor-type-binding>
+      <resource-adaptor-type-ref>
+        <resource-adaptor-type-name>${SIP_RATYPE_NAME}</resource-adaptor-type-name>
+        <resource-adaptor-type-vendor>${SIP_RATYPE_VENDOR}</resource-adaptor-type-vendor>
+        <resource-adaptor-type-version>${SIP_RATYPE_VERSION}</resource-adaptor-type-version>
+      </resource-adaptor-type-ref>
+      <activity-context-interface-factory-name>
+        ${SIP_ACIFACTORY}
+      </activity-context-interface-factory-name>
+      <resource-adaptor-entity-binding>
+        <resource-adaptor-object-name>
+          ${SIP_PROVIDER}
+        </resource-adaptor-object-name>
+        <resource-adaptor-entity-link>
+          ${SIP_LINKNAME}
+        </resource-adaptor-entity-link>
+      </resource-adaptor-entity-binding>
+    </resource-adaptor-type-binding>
+	 
+  </sbb>
+
+  <sbb id="notify">
+    <description>SIP Notify SBB</description>
+    <sbb-name>${notify.sbb.name}</sbb-name>
+    <sbb-vendor>${notify.sbb.vendor}</sbb-vendor>
+    <sbb-version>${notify.sbb.version}</sbb-version>
+
+    <sbb-ref>
+      <sbb-name>${presence.sbb.name}</sbb-name>
+      <sbb-vendor>${presence.sbb.vendor}</sbb-vendor>
+      <sbb-version>${presence.sbb.version}</sbb-version>
+      <sbb-alias>ESCSBB</sbb-alias>
+    </sbb-ref>
+
+    <sbb-classes>
+
+      <sbb-abstract-class>
+
+        <sbb-abstract-class-name>
+          com.opencloud.slee.services.sip.presence.notify.NotifySbb
+        </sbb-abstract-class-name>
+
+        <cmp-field>
+		  <description>The sip address of record of the subscribed presentity</description>
+		  <cmp-field-name>sipAddressOfRecord</cmp-field-name>
+	    </cmp-field>
+
+	    <cmp-field>
+		  <description>The ID of the timer set to determine when the subscription should expire </description>
+		  <cmp-field-name>subscriptionTimerId</cmp-field-name>
+	    </cmp-field>
+
+	    <get-child-relation-method>
+          <sbb-alias-ref>
+            ESCSBB
+          </sbb-alias-ref>
+          <get-child-relation-method-name>
+            getPresenceServiceChildRelation
+          </get-child-relation-method-name>
+          <default-priority>0</default-priority>
+        </get-child-relation-method>
+
+      </sbb-abstract-class>
+
+      <sbb-activity-context-interface>
+        <description>
+          Used to keep track of the number of subscriptions for a given presentity
+        </description>
+        <sbb-activity-context-interface-name>
+          com.opencloud.slee.services.sip.presence.SubscriptionACI
+        </sbb-activity-context-interface-name>
+      </sbb-activity-context-interface>
+
+    </sbb-classes>
+
+    <event event-direction="Receive" initial-event="True">
+      <event-name>SubscribeEvent</event-name>
+      <event-type-ref>
+        <event-type-name>javax.sip.message.Request.SUBSCRIBE</event-type-name>
+        <event-type-vendor>net.java.slee</event-type-vendor>
+        <event-type-version>1.2</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+    </event>
+
+    <event event-direction="Receive" initial-event="False">
+      <event-name>NotifyStateChangeEvent</event-name>
+      <event-type-ref>
+        <event-type-name>com.opencloud.slee.services.sip.presence.NotifyStateChangeEvent</event-type-name>
+        <event-type-vendor>OpenCloud</event-type-vendor>
+        <event-type-version>1.0</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+    </event>
+
+    <event event-direction="Receive" initial-event="False">
+      <event-name>TransactionTimeOutEvent</event-name>
+      <event-type-ref>
+        <event-type-name>javax.sip.Timeout.TRANSACTION</event-type-name>
+        <event-type-vendor>net.java.slee</event-type-vendor>
+        <event-type-version>1.2</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+    </event>
+
+	 <event event-direction="Receive" initial-event="False">
+      <event-name>OKResponseEvent</event-name>
+      <event-type-ref>
+        <event-type-name>javax.sip.message.Response.SUCCESS</event-type-name>
+        <event-type-vendor>net.java.slee</event-type-vendor>
+        <event-type-version>1.2</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+    </event>
+
+    <event event-direction="Receive" initial-event="False">
+      <event-name>InDialogSubscribeEvent</event-name>
+      <event-type-ref>
+        <event-type-name>javax.sip.Dialog.SUBSCRIBE</event-type-name>
+        <event-type-vendor>net.java.slee</event-type-vendor>
+        <event-type-version>1.2</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+    </event>
+
+    <!-- REFRESH TIMER -->
+
+    <event event-direction="Receive" initial-event="False">
+      <event-name>RefreshTimer</event-name>
+      <event-type-ref>
+        <event-type-name>javax.slee.facilities.TimerEvent</event-type-name>
+        <event-type-vendor>javax.slee</event-type-vendor>
+        <event-type-version>1.0</event-type-version>
+      </event-type-ref>
+    </event>
+
+    <event event-direction="Receive" initial-event="False">
+      <event-name>ActivityEndEvent</event-name>
+      <event-type-ref>
+        <event-type-name>javax.slee.ActivityEndEvent</event-type-name>
+        <event-type-vendor>javax.slee</event-type-vendor>
+        <event-type-version>1.0</event-type-version>
+      </event-type-ref>
+    </event>
+
+    <env-entry>
+      <env-entry-name>sipProviderName</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <env-entry-value>${SIP_PROVIDER}</env-entry-value>
+    </env-entry>
+
+    <env-entry>
+      <env-entry-name>sipACIFactoryName</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <env-entry-value>${SIP_ACIFACTORY}</env-entry-value>
+    </env-entry>
+
+    <!-- Comma separated list of SIP clients that are known to not respect subscription expiry times provided by the presence service-->
+    <env-entry>
+      <env-entry-name>nonCompliantSubExpiryClients</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <env-entry-value>Purple/2.2.1,Purple/2.3.0</env-entry-value>
+    </env-entry>
+
+    <resource-adaptor-type-binding>
+      <resource-adaptor-type-ref>
+        <resource-adaptor-type-name>${SIP_RATYPE_NAME}</resource-adaptor-type-name>
+        <resource-adaptor-type-vendor>${SIP_RATYPE_VENDOR}</resource-adaptor-type-vendor>
+        <resource-adaptor-type-version>${SIP_RATYPE_VERSION}</resource-adaptor-type-version>
+      </resource-adaptor-type-ref>
+      <activity-context-interface-factory-name>
+        ${SIP_ACIFACTORY}
+      </activity-context-interface-factory-name>
+      <resource-adaptor-entity-binding>
+        <resource-adaptor-object-name>
+          ${SIP_PROVIDER}
+        </resource-adaptor-object-name>
+        <resource-adaptor-entity-link>
+          ${SIP_LINKNAME}
+        </resource-adaptor-entity-link>
+      </resource-adaptor-entity-binding>
+    </resource-adaptor-type-binding>
+
+  </sbb>
+
+  <sbb id="publish">
+    <description>SIP Publish SBB</description>
+    <sbb-name>${publish.sbb.name}</sbb-name>
+    <sbb-vendor>${publish.sbb.vendor}</sbb-vendor>
+    <sbb-version>${publish.sbb.version}</sbb-version>
+
+    <!-- Location Service SBB - edit this to switch Location Service -->
+    <!-- implementations (AC Naming, JDBC, LDAP etc). -->
+    <sbb-ref>
+      <sbb-name>${location.sbb.name}</sbb-name>
+      <sbb-vendor>${location.sbb.vendor}</sbb-vendor>
+      <sbb-version>${location.sbb.version}</sbb-version>
+      <sbb-alias>LOCATIONSBB</sbb-alias>
+    </sbb-ref>
+
+    <sbb-classes>
+
+      <sbb-abstract-class>
+
+        <sbb-abstract-class-name>
+          com.opencloud.slee.services.sip.presence.publish.PublishSbb
+        </sbb-abstract-class-name>
+
+	    <get-child-relation-method>
+          <sbb-alias-ref>
+            LOCATIONSBB
+          </sbb-alias-ref>
+          <get-child-relation-method-name>
+            getLocationServiceChildRelation
+          </get-child-relation-method-name>
+          <default-priority>0</default-priority>
+        </get-child-relation-method>
+
+      </sbb-abstract-class>
+
+      <sbb-activity-context-interface>
+      	<description>
+        	Used to keep track of the presence information for a given presentity
+        </description>
+        <sbb-activity-context-interface-name>
+         	com.opencloud.slee.services.sip.presence.PresenceACI
+        </sbb-activity-context-interface-name>
+      </sbb-activity-context-interface>
+
+    </sbb-classes>
+
+
+    <event event-direction="Receive" initial-event="True">
+      <event-name>PublishEvent</event-name>
+      <event-type-ref>
+        <event-type-name>javax.sip.message.Request.PUBLISH</event-type-name>
+        <event-type-vendor>net.java.slee</event-type-vendor>
+        <event-type-version>1.2</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+    </event>
+
+    <event event-direction="Fire">
+      <event-name>PresentityStateChangeEvent</event-name>
+      <event-type-ref>
+        <event-type-name>com.opencloud.slee.services.sip.presence.PresentityStateChangeEvent</event-type-name>
+        <event-type-vendor>OpenCloud</event-type-vendor>
+        <event-type-version>1.1</event-type-version>
+      </event-type-ref>
+    </event>
+
+    <event event-direction="Receive" initial-event="False">
+      <event-name>InDialogPublishEvent</event-name>
+      <event-type-ref>
+        <event-type-name>javax.sip.Dialog.PUBLISH</event-type-name>
+        <event-type-vendor>net.java.slee</event-type-vendor>
+        <event-type-version>1.2</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+    </event>
+
+    <activity-context-attribute-alias>
+    	<attribute-alias-name>PresenceInformation</attribute-alias-name>
+    	<sbb-activity-context-attribute-name>presenceInformation</sbb-activity-context-attribute-name>
+    </activity-context-attribute-alias>
+
+    <env-entry>
+      <env-entry-name>sipProviderName</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <env-entry-value>${SIP_PROVIDER}</env-entry-value>
+    </env-entry>
+
+    <env-entry>
+      <env-entry-name>sipACIFactoryName</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <env-entry-value>${SIP_ACIFACTORY}</env-entry-value>
+    </env-entry>
+
+    <resource-adaptor-type-binding>
+      <resource-adaptor-type-ref>
+        <resource-adaptor-type-name>${SIP_RATYPE_NAME}</resource-adaptor-type-name>
+        <resource-adaptor-type-vendor>${SIP_RATYPE_VENDOR}</resource-adaptor-type-vendor>
+        <resource-adaptor-type-version>${SIP_RATYPE_VERSION}</resource-adaptor-type-version>
+      </resource-adaptor-type-ref>
+      <activity-context-interface-factory-name>
+        ${SIP_ACIFACTORY}
+      </activity-context-interface-factory-name>
+      <resource-adaptor-entity-binding>
+        <resource-adaptor-object-name>
+          ${SIP_PROVIDER}
+        </resource-adaptor-object-name>
+        <resource-adaptor-entity-link>
+          ${SIP_LINKNAME}
+        </resource-adaptor-entity-link>
+      </resource-adaptor-entity-binding>
+    </resource-adaptor-type-binding>
+
+  </sbb>
+
+</sbb-jar>
+

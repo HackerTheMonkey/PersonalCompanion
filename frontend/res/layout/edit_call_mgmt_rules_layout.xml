@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content"
+	android:scrollbars="vertical"
+>
+	<LinearLayout
+	  xmlns:android="http://schemas.android.com/apk/res/android"  
+	  android:layout_width="wrap_content"
+	  android:layout_height="wrap_content"
+	  android:orientation="vertical"
+	>
+		<RelativeLayout
+		  xmlns:android="http://schemas.android.com/apk/res/android"
+		  android:orientation="vertical"
+		  android:layout_width="fill_parent"
+		  android:layout_height="fill_parent"
+		>
+		
+		  <ImageView
+		  	android:id="@+id/addRuleTitleIconImageView"
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:layout_alignParentTop="true"
+		  	android:layout_margin="10px"
+		  	android:src="@drawable/add_rule"	  		  		  	 	  		  	
+		  />
+	  
+		  <TextView 
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:id="@+id/settingsTitleTextView"
+		  	android:text="ADD RULE"
+		  	android:layout_toRightOf="@id/addRuleTitleIconImageView"	
+		  	style="@style/ListItemTitleStyle"
+		  />
+		  
+		  <TextView
+		  	android:id="@+id/addRuleDescTextView"
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:text="Create a new Call Management Rule (CMR) to tell the network how you would like your incoming calls to be handled."
+		  	android:textSize="20px"
+		  	style="@style/ListItemDescStyle"
+		  	android:layout_alignTop="@id/addRuleTitleIconImageView"
+	  	 />
+		
+		</RelativeLayout>
+	  
+		<TextView
+		  	android:id="@+id/editCallMgmtRulesTitleTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Call Management Rule (CMR)"
+		  	android:layout_marginTop="10px"
+			style="@style/SeparatorTextViewStyle"		  	
+	    />
+	    
+	    <TextView
+		  	android:id="@+id/editCallMgmtRuleNameTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Rule Name:"
+		  	android:layout_marginTop="10px"
+		  	android:textSize="18px"	  	
+	    />
+	    	    
+	   <EditText
+		  	android:id="@+id/editCallMgmtRuleNameTextEdit"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"  	
+		  	android:maxLines="1"
+		  	android:layout_marginTop="5px"
+	   />
+	   
+		<TextView
+		  	android:id="@+id/dateTimeSettingsLabelTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Date and Time Settings"
+			style="@style/SeparatorTextViewStyle"
+			android:layout_marginTop="10px"		  	
+	    />
+	    	   
+	    <TextView
+		  	android:id="@+id/editCallMgmtRuleFromDateTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Enter a start date:"
+		  	android:layout_marginTop="10px"
+		  	android:textSize="18px"
+	    />
+	    	   
+	   <DatePicker
+	   		android:id="@+id/editCallMgmtRuleFromDatePicker"
+	   		android:startYear="2011"
+	   		android:endYear="2020"
+	   		android:scrollbars="vertical"
+	   		android:layout_width="fill_parent"
+	   		android:layout_height="wrap_content"
+	   		android:layout_marginTop="5px"
+	   />  
+	    <TextView
+		  	android:id="@+id/editCallMgmtRuleToDateTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Enter an end date:"		  	
+		  	android:layout_marginTop="10px"
+		  	android:textSize="18px"		  	
+	    />	   
+	    
+	   <DatePicker
+	   		android:id="@+id/editCallMgmtRuleToDatePicker"
+	   		android:startYear="2011"
+	   		android:endYear="2020"
+	   		android:scrollbars="vertical"
+	   		android:layout_width="fill_parent"
+	   		android:layout_height="wrap_content"
+	   		android:layout_marginTop="5px"
+	   />
+	    <TextView
+		  	android:id="@+id/editCallMgmtRuleFromTimeTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Enter a start time:"
+		  	android:layout_marginTop="10px"
+		  	android:textSize="18px"
+	    />	   
+	   <TimePicker
+	   		android:id="@+id/editCallMgmtRuleFromTimePicker"	   		
+	   		android:scrollbars="vertical"
+	   		android:layout_width="fill_parent"
+	   		android:layout_height="wrap_content"
+	   		android:layout_marginTop="5px"
+	   />	   
+	    <TextView
+		  	android:id="@+id/editCallMgmtRuleToTimeTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Enter an end time:"
+		  	android:layout_marginTop="10px"
+		  	android:textSize="18px"		  	
+	    />	   
+	   <TimePicker
+	   		android:id="@+id/editCallMgmtRuleToTimePicker"	   		
+	   		android:scrollbars="vertical"
+	   		android:layout_width="fill_parent"
+	   		android:layout_height="wrap_content"
+	   		android:layout_marginTop="5px"
+	   />
+		<TextView
+		  	android:id="@+id/locationInformationLabelTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Location and Proximity Settings"
+			style="@style/SeparatorTextViewStyle"
+			android:layout_marginTop="10px"					  	
+	    />
+	    
+		<RelativeLayout
+			android:id="@+id/editCallMgmtRuleLocationRelativeLayout"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"			
+		>
+			<TextView
+			  	android:id="@+id/editCallMgmtRuleLongitudeTextView"
+			  	android:layout_width="wrap_content"
+			  	android:layout_height="wrap_content"
+			  	android:text="Lon:  "
+			  	android:textSize="18px"			  	
+			  	android:layout_alignParentLeft="true"
+			  	android:layout_marginTop="20px"			  	
+	    	/>
+		    <EditText
+			  	android:id="@+id/editCallMgmtRuleLongitudeTextEdit"
+			  	android:layout_width="140px"
+			  	android:layout_height="wrap_content"  	
+			  	android:maxLines="1"
+			  	android:inputType="numberDecimal"
+			  	android:layout_toRightOf="@id/editCallMgmtRuleLongitudeTextView"
+			  	android:layout_marginTop="10px"
+	   		/>
+			<TextView
+			  	android:id="@+id/editCallMgmtRuleLatitudeTextView"
+			  	android:layout_width="wrap_content"
+			  	android:layout_height="wrap_content"
+			  	android:text="  Lat:  "
+			  	android:textSize="18px"
+			  	android:layout_marginTop="20px"
+			  	android:layout_toRightOf="@id/editCallMgmtRuleLongitudeTextEdit"			  	
+	    	/>
+		    <EditText
+			  	android:id="@+id/editCallMgmtRuleLatitudeTextEdit"
+			  	android:layout_width="140px"
+			  	android:layout_height="wrap_content"  	
+			  	android:maxLines="1"
+			  	android:inputType="numberDecimal"
+			  	android:layout_toRightOf="@id/editCallMgmtRuleLatitudeTextView"
+			  	android:layout_marginTop="10px"
+	   		/>
+	   		<ImageButton
+	   			android:id="@+id/editCallMgmtRuleShowMapBtn"
+	   			android:layout_width="wrap_content"
+	   			android:layout_height="wrap_content"
+				android:src="@drawable/map_image_button_selector_drawable"
+				android:background="@android:color/transparent"				
+				android:layout_marginLeft="7px"	   				   			
+	   			android:layout_toRightOf="@id/editCallMgmtRuleLatitudeTextEdit"
+	   			android:layout_marginTop="10px"
+	   		/>
+	   		
+	   		<TextView
+			  	android:id="@+id/editCallMgmtRuleProximityTextView"
+			  	android:layout_width="fill_parent"
+			  	android:layout_height="wrap_content"
+			  	android:text="Proximity (in meters): "
+			  	android:textSize="18px"
+			  	android:layout_alignParentLeft="true"
+			  	android:layout_marginRight="5px"
+			  	android:layout_below="@id/editCallMgmtRuleLongitudeTextEdit" 
+			  	android:layout_marginTop="45px"
+			/>
+			
+			<EditText
+			  	android:id="@+id/editCallMgmtRuleProximityTextEdit"
+			  	android:layout_width="150px"
+			  	android:layout_height="wrap_content"
+			  	android:text="1000"
+			  	android:inputType="number"	
+			  	android:maxLines="1"			  	
+			  	android:layout_below="@id/editCallMgmtRuleLatitudeTextEdit"
+			  	android:layout_marginLeft="235px"
+			  	android:layout_marginTop="20px"
+			  	android:layout_alignBaseline="@id/editCallMgmtRuleProximityTextView"
+	   		/>
+	   		
+		</RelativeLayout>			   
+	   
+	   <TextView
+		  	android:id="@+id/callScreeningSettingsLabelTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Call Screening Settings"
+			style="@style/SeparatorTextViewStyle" 	
+	    />
+	    <TextView
+		  	android:id="@+id/incomingCallerNumberPrefixTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Enter incoming calling number(s)/prefix:"
+		  	android:textSize="18px"
+		  	android:layout_marginTop="10px"		  	
+	    />	    
+	   <EditText
+		  	android:id="@+id/incomingCallerNumberTextEdit"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"  	
+		  	android:inputType="phone"
+		  	android:maxLines="1"
+		  	android:layout_marginTop="5px"
+	   />
+	    <TextView
+		  	android:id="@+id/callHandlingSelectionTypeTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="@string/callHandlingPrompt"
+		  	android:textSize="18px"
+		  	android:layout_marginTop="10px"		  	
+	    />
+		<Spinner
+			android:id="@+id/callHandlingMethodSpinner"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:prompt="@string/callHandlingPrompt"
+			android:layout_marginTop="5px"
+		/>
+		
+		<TextView
+		  	android:id="@+id/deviceListLabelTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Other Devices Settings"
+			style="@style/SeparatorTextViewStyle"
+			android:layout_marginTop="10px"	  	
+	    />
+	    <TextView
+		  	android:id="@+id/deviceListTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="Enter devices to ring (seperated by comma):"
+		  	android:textSize="18px"
+		  	android:layout_marginTop="10px"		  	
+	    />	    
+	   <EditText
+		  	android:id="@+id/deviceListTextEdit"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"  	
+		  	android:inputType="phone"
+		  	android:maxLines="1"
+		  	android:layout_marginTop="10px"
+	   />   
+	   <TextView
+		  	android:id="@+id/callRingingTypeTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="@string/callRingingPrompt"
+		  	android:textSize="18px"
+		  	android:layout_marginTop="10px"		  	
+	    />
+		<Spinner
+			android:id="@+id/callRingingTypeSpinner"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:prompt="@string/callRingingPrompt"
+			android:layout_marginTop="5px"
+		/>
+		<TextView
+		  	android:id="@+id/ringingTypeLabelTextView"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="2px"
+		  	style="@style/SeparatorTextViewStyle"
+		  	android:layout_marginTop="10px"
+		  	android:layout_marginBottom="10px"
+	    />	   		
+		<RelativeLayout
+			android:id="@+id/buttonsGroupRuleCreationRelativeLayout"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="15px"
+		>
+			<Button
+				android:id="@+id/createRuleBtn"
+				android:text="          Create          "
+				android:layout_alignParentLeft="true"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="15px"			
+			/>
+			<Button 
+				android:id="@+id/cancelCreationRuleBtn"
+				android:text="          Cancel          "
+				android:layout_toRightOf="@+id/createRuleBtn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginRight="10px"
+			/>			
+		</RelativeLayout>
+	</LinearLayout>
+</ScrollView>

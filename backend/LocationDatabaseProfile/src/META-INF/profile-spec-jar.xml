@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE profile-spec-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE Profile Specification 1.1//EN"
+  "http://java.sun.com/dtd/slee-profile-spec-jar_1_1.dtd">
+
+<profile-spec-jar>
+  <profile-spec profile-read-only="False">
+    <profile-spec-name>LocationDbProfileSpec</profile-spec-name>
+    <profile-spec-vendor>Opencloud</profile-spec-vendor>
+    <profile-spec-version>1.0</profile-spec-version>
+
+    <library-ref>
+        <description></description>
+        <library-name>JSIP</library-name>
+        <library-vendor>javax.sip</library-vendor>
+        <library-version>1.2</library-version>
+    </library-ref>
+    
+    <library-ref>
+        <description></description>
+        <library-name>OC SIP Extensions</library-name>
+        <library-vendor>OpenCloud</library-vendor>
+        <library-version>2.2</library-version>
+    </library-ref>
+    
+    <library-ref>
+        <description></description>
+        <library-name>JSIP RA Type Classes</library-name>
+        <library-vendor>net.java.slee</library-vendor>
+        <library-version>1.2</library-version>
+    </library-ref>
+
+    <profile-classes>
+      <profile-cmp-interface>
+          <description>This is the profile spec cmp interface</description>
+        <profile-cmp-interface-name>com.opencloud.slee.services.location.LocationDbProfileSpecCMP</profile-cmp-interface-name>
+      </profile-cmp-interface>
+      <profile-local-interface>
+          <description>Profile Local Interface</description>
+          <profile-local-interface-name>com.opencloud.slee.services.location.LocationDbProfileLocalInterface</profile-local-interface-name>
+      </profile-local-interface>
+      <profile-abstract-class>
+          <description>This is the profile spec abstract class</description>
+          <profile-abstract-class-name>com.opencloud.slee.services.location.LocationDbAbstractClass</profile-abstract-class-name>
+      </profile-abstract-class>
+    </profile-classes>
+  </profile-spec>
+</profile-spec-jar>

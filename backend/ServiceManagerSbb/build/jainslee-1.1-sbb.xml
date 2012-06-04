@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<project name="Example JAIN SLEE Sbb tasks">
+
+  <!-- Compile project classes -->
+  <target name="compile-sbb" description="Compile Sbb classes">
+    <mkdir dir="${classes}/java/sbb" />
+    <javac srcdir="${src}/sbb" destdir="${classes}/java/sbb" source="${jdk.version}" target="${jdk.version}" debug="true" includes="**/*.java">
+      <classpath>
+        <path refid="slee.classpath" />
+        <fileset dir="${lib}" includes="**/*.jar" />
+        <path location="${classes}/java/ratype" />
+        <path location="${classes}/java/events" />
+        <path location="${classes}/java/ra" />
+        <path location="${classes}/java/profile-spec" />
+        <path location="${classes}/java/library" />
+      </classpath>
+    </javac>
+  </target>
+
+  <!-- Package and build Sbb Deployment Unit -->
+  <target name="package-sbb" depends="compile-sbb" description="Package and build Sbb Deployment Unit">
+    <copy-descriptors-and-filter fromDir="${src}" toDir="${classes}" />
+    <mkdir dir="${jars}" />
+    <deployablejar destfile="${jars}/service-manager-du.jar" metainfbase="${classes}/META-INF" extxml="oc-service.xml">
+      <sbbjar destfile="${jars}/service_manager_sbb.jar" classpath="${classes}/java/sbb" extjarxml="oc-sbb-jar.xml">
+        <fileset dir="${classes}/java/sbb" />
+      </sbbjar>
+    </deployablejar>
+    <delete file="${jars}/service_manager_sbb.jar" />
+  </target>
+
+  <!--  Deploy Sbb DU -->
+  <target name="deploy-sbb" depends="package-sbb, login" description="Deploy Sbb DU">
+    <slee-management>
+      <install srcfile="${jars}/httpra_testing_service-deployable-unit.jar" url="file:${jars}/${service.name}-${service.version}-${service.vendor}-deployable-unit.jar" />
+      <settracerlevel tracername="${sbb.name}" level="${sbb.log.level}">
+        <sbbNotificationSource>
+          <sbb name="${sbb.name}" vendor="${sbb.vendor}" version="${sbb.version}" />
+          <service name="${service.name}" vendor="${service.vendor}" version="${service.version}" />
+        </sbbNotificationSource>
+      </settracerlevel>
+      <activateservice>
+        <component name="${service.name}" vendor="${service.vendor}" version="${service.version}" />
+      </activateservice>
+    </slee-management>
+  </target>
+
+  <!-- Undeploy Sbb DU -->
+  <target name="undeploy-sbb" depends="login" description="Undeploy Sbb DU">
+    <slee-management>
+      <deactivateservice>
+        <component name="${service.name}" vendor="${service.vendor}" version="${service.version}" />
+      </deactivateservice>
+      <waittilserviceisinactive>
+        <component name="${service.name}" vendor="${service.vendor}" version="${service.version}" />
+      </waittilserviceisinactive>
+      <uninstall url="file:${jars}/${service.name}-${service.version}-${service.vendor}-deployable-unit.jar" />
+    </slee-management>
+
+  </target>
+</project>

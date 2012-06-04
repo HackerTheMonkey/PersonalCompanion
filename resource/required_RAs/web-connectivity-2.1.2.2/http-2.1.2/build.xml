@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+
+<project name="Open Cloud Rhino SLEE SDK - HTTP Examples" default="deployexamples">
+
+  <property file="build.properties"/>
+  <import file="${client.home}/etc/common.xml"/> 
+
+  <target name="deployexamples" depends="build-ping, deploy-httpra, deploy-ping"
+    description="Deploy HTTP RA and example app">
+  </target>
+
+  <target name="undeployexamples" depends="login, undeploy-ping, undeploy-httpra"
+    description="Undeploy HTTP RA and example app">
+  </target>
+
+  <target name="deploy-httpra" depends="login" description="Deploy HTTP resource adaptor">
+    <slee-management >
+       <install srcfile="${lib}/${ra.jar}" url="file:${lib}/${ra.jar}" />
+       <createraentity resourceadaptorid="${ra.name}" entityname="${ra.entity}" properties="${ra.properties}" />
+       <bindralinkname entityname="${ra.entity}" linkname="${ra.link}"/>
+       <activateraentity entityname="${ra.entity}" />
+    </slee-management>
+  </target>
+
+  <target name="undeploy-httpra" depends="login" description="Undeploy HTTP resource adaptor">
+    <slee-management>
+       <deactivateraentity entityname="${ra.entity}" />
+       <unbindralinkname linkname="${ra.link}" />
+       <waittilraentityisinactive entityname="${ra.entity}" />
+       <removeraentity entityname="${ra.entity}" />
+       <uninstall url="file:${lib}/${ra.jar}" />
+    </slee-management>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${classes}/http-ping"/>
+    <javac source="1.5" target="1.5" optimize="${opt}" debug="${debug}" srcdir="${src}" destdir="${classes}/http-ping"
+      includes="com/opencloud/slee/services/common/*.class,
+              com/opencloud/slee/example/http/**/*.java">
+      <classpath>
+        <path refid="slee.classpath"/>
+        <pathelement location="${lib}/${ra.events.jar}" />
+        <pathelement location="${lib}/${ra.type.jar}" />
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="build-ping" depends="compile" description="Build HTTP ping service deployable unit">
+    <!-- SBB jar -->
+    <mkdir dir="${jars}"/>
+    <jar jarfile="${jars}/${ping.sbb.jar}">
+      <metainf dir="${src}/com/opencloud/slee/example/http/ping/META-INF" includes="sbb-jar.xml"/>
+      <fileset dir="${classes}/http-ping" includes="**/*.class"/>
+    </jar>
+
+    <!-- Service deployable unit jar -->
+    <jar jarfile="${jars}/${ping.service.jar}" update="true">
+      <metainf dir="${src}/com/opencloud/slee/example/http/ping/META-INF" includes="deployable-unit.xml" />
+      <fileset dir="${jars}" includes="${ping.sbb.jar}" />
+      <fileset dir="${src}/com/opencloud/slee/example/http/ping/META-INF" includes="service.xml" />
+    </jar>
+
+    <delete file="${jars}/${ping.sbb.jar}"/>
+  </target>
+
+  <target name="deploy-ping" depends="build-ping, login" description="Deploy HTTP Ping service">
+    <slee-management>
+       <install srcfile="${jars}/${ping.service.jar}" url="file:${jars}/${ping.service.jar}" />
+        <activateservice>
+          <component name="${ping.service.name}" vendor="${ping.service.vendor}" version="${ping.service.version}"/>
+        </activateservice>
+        <settracerlevel tracername="" level="${sbb.tracelevel}">
+            <sbbNotificationSource>
+                <service name="${ping.service.name}" vendor="${ping.service.vendor}" version="${ping.service.version}"/>
+                <sbb name="${ping.sbb.name}" vendor="${ping.sbb.vendor}" version="${ping.sbb.version}"/>
+            </sbbNotificationSource>
+        </settracerlevel>
+    </slee-management>
+  </target>
+
+  <target name="undeploy-ping" depends="login" description="Undeploy HTTP Ping service">
+    <slee-management>
+        <deactivateservice>
+          <component name="${ping.service.name}" vendor="${ping.service.vendor}" version="${ping.service.version}"/>
+        </deactivateservice>
+        <waittilserviceisinactive>
+          <component name="${ping.service.name}" vendor="${ping.service.vendor}" version="${ping.service.version}"/>
+        </waittilserviceisinactive>
+       <uninstall url="file:${jars}/${ping.service.jar}" />
+    </slee-management>
+  </target>
+
+</project>

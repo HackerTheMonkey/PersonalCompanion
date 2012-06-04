@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:id="@+id/positionSelectionMapLinearLayout">
+  
+  <RelativeLayout
+	  xmlns:android="http://schemas.android.com/apk/res/android"
+	  android:orientation="vertical"
+	  android:layout_width="fill_parent"
+	  android:layout_height="fill_parent"
+  >
+  
+	  <ImageView
+	  	android:id="@+id/positionSelectionTitleIconImageView"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:layout_alignParentTop="true"
+	  	android:layout_margin="10px"
+	  	android:src="@drawable/settings"	  		  		  	 	  		  	
+	  />
+	  
+	  <TextView 
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:id="@+id/positionSelectionTitleTextView"
+	  	android:text="Location Determination"
+	  	android:layout_toRightOf="@id/positionSelectionTitleIconImageView"	
+	  	style="@style/ListItemTitleStyle"
+	  />
+	  
+	  <TextView
+		android:id="@+id/myLocationTextView"  
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    android:text="Please double tap on the desired position to select or enter a location below:"
+		android:textSize="18px"
+		android:layout_marginTop="10px"	
+		android:layout_below="@id/positionSelectionTitleTextView"    
+	  />
+	  
+	  <EditText
+		  	android:id="@+id/enterPostcodeEditText"
+		  	android:layout_width="300px"
+		  	android:layout_height="wrap_content"  	
+		  	android:maxLines="1"
+		  	android:layout_marginTop="10px"
+		  	android:layout_below="@id/myLocationTextView"
+	   />
+	   
+	   <Button
+	   		android:id="@+id/updatePostcodeButton"	   		
+	   		android:layout_width="180px"
+	   		android:layout_height="wrap_content"
+	   		android:text="Find location"
+	   		android:paddingLeft="5px"
+	   		android:paddingRight="5px"
+	   		android:layout_marginTop="10px"	   		
+	   		android:layout_below="@id/myLocationTextView"
+	   		android:layout_toRightOf="@id/enterPostcodeEditText"	   			   		
+	   />
+	   
+	   <com.opencloud.demo.PositionSelectionMapView
+			android:id="@+id/positionSelectionMapView" 
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:enabled="true"
+			android:clickable="true" 
+			android:apiKey="0_zVs7XkgJaay8k8LWZ02P7G_zacrngMUQpiPJA"
+			android:layout_marginTop="10px"
+			android:layout_below="@id/enterPostcodeEditText"	
+		/>
+	   	  
+  </RelativeLayout>	
+
+</LinearLayout>

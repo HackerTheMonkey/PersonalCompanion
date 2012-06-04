@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE oc-profile-spec-jar
+    PUBLIC "-//Open Cloud Ltd.//DTD JAIN SLEE Profile Specification Extension 1.1.1//EN"
+    "http://www.opencloud.com/dtd/oc-profile-spec-jar_1_1_1.dtd">
+
+<oc-profile-spec-jar>
+  <!-- Registration profiles do not need to be persisted to disk, use replicated memory -->
+  <profile-spec id="registrations">
+    <persistence-resource>ReplicatedMemoryDatabase</persistence-resource>
+    <lock-strategy>pessimistic</lock-strategy>
+  </profile-spec>
+
+</oc-profile-spec-jar>

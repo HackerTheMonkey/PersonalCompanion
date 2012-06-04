@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <title>RA Type Overview</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <link href="css/diameter.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+
+<body>
+
+<div id="wrapper">
+    <div id="header"><a href="http://www.opencloud.com/" title="OpenCloud">OpenCloud</a></div>
+
+    <div id="content">
+        <div id="content-top"></div>
+
+        <div id="subnav-column" class="diameter">
+            <ul class="subnav">
+                <li><a href="index.html" title="SIP Connectivity Pack" id="diameter">SIP Connectivity Pack</a></li>
+            </ul>
+            <ul class="subnav-diameter">
+                <li><a href="release-notes.html" title="Release Notes" id="release-notes">Release Notes</a></li>
+                <li><a href="getting-started.html" title="Getting Started" id="getting-started">Getting Started</a></li>
+                <li><a href="configuration.html" title="Configuration" id="configuration">RA Configuration</a></li>
+                <li><a href="features.html" title="Features" id="features">RA Features</a></li>
+                <li><strong>RA Type Overview</strong></li>
+                <li><a href="examples.html" title="Examples" id="examples">Example Applications</a></li>
+            </ul>
+        </div>
+
+        <div id="content-column">
+
+            <div id="content-column-text">
+                <div class="h1-header">
+                    <h1>RA Type Overview</h1>
+                </div>
+
+                <h2>Introduction</h2>
+
+                <p>The OpenCloud SIP RA supports the JAIN SIP 1.2 RA Type API, as described in Appendix D
+                of the JAIN SLEE 1.1 Specification. This RA Type is based on the JAIN SIP 1.2 API, with some
+                additional features for SLEE applications.</p>
+
+                <p>The SIP RA also supports an additional RA Type, called OCSIP. This extends the JAIN SIP 1.2
+                RA Type with some useful convenience methods, and header interfaces for 3GPP ISC support.</p>
+
+                <p>The RA Type APIs are described in the javadocs included with this distribution.</p>
+                <ul>
+                    <li><a href="api/jsip-ratype/index.html">JAIN SIP 1.2 RA Type API</a></li>
+                    <li><a href="api/ocsip-ratype/index.html">OCSIP 2.2 RA Type API</a></li>
+                </ul>
+
+                <h2>Migrating from previous versions of the OCSIP RA Type</h2>
+
+                <p>Applications written for earlier OCSIP RA Types (1.4 and earlier) will need some minor changes
+                to use the new JAIN SIP or OCSIP RA Type. These changes are described here.</p>
+
+                <h3>SBB Resource Adaptor Interface</h3>
+
+                <p>In the previous RA Type, the SBB RA Interface was <a href="">OCSipResourceAdaptorSbbInterface</a>.
+                This interface has been replaced by <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html">SleeSipProvider</a>
+                in the standard JAIN SIP 1.2 RA Type.
+                This extends <a href="api/jain-sip-api/javax/sip/SipProvider.html">javax.sip.SipProvider</a>,
+                and provides methods for accessing the JAIN SIP factory objects.</p>
+
+                <p>To access OpenCloud-specific features and headers, the OCSIP RA Type can be used, and this provides
+                the <a href="api/ocsip-ratype/com/opencloud/javax/sip/slee/OCSleeSipProvider.html">OCSleeSipProvider</a>
+                interface, which extends <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html">SleeSipProvider</a>.</p>
+
+                <p>Applications written using the previous RA type must replace all references to
+                <a href="">OCSipResourceAdaptorSbbInterface</a> with
+                <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html">SleeSipProvider</a> or
+                <a href="api/ocsip-ratype/com/opencloud/javax/sip/slee/OCSleeSipProvider.html">OCSleeSipProvider</a>.</p>
+
+                <h3>Event Type Identifiers</h3>
+
+                <p>All event type IDs have been changed in the new RA Type. All events in the JAIN SIP RA Type
+                have the vendor "net.java.slee" (denoting the JAIN SLEE community) and version "1.2".
+                Consult the table in the <a href="api/jsip-ratype/index.html">JAIN SIP 1.2 RA Type Overview Page</a> to
+                see the complete list of events.</p>
+
+                <p>Users of OpenCloud-specific events should also check the event table
+                in the <a href="api/ocsip-ratype/index.html">OCSIP RA Type Overview Page</a>.</p>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">
+        <ul>
+            <li></li>
+        </ul>
+
+        <p class="copyright">&copy; OpenCloud Limited 2007-2010</p>
+    </div>
+</div>
+</body>
+</html>

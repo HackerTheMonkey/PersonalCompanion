@@ -1,0 +1,11 @@
+clean
+compile-sbb
+deploy
+deploy-sbb
+init
+init-management-db
+package-sbb
+start-rhino
+stop-rhino
+undeploy
+undeploy-sbb

@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <title>Forking</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <link href="css/diameter.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+
+<body>
+
+<div id="wrapper">
+    <div id="header"><a href="http://www.opencloud.com/" title="OpenCloud">OpenCloud</a></div>
+
+    <div id="content">
+        <div id="content-top"></div>
+
+         <div id="subnav-column" class="diameter">
+            <ul class="subnav">
+                <li><a href="index.html" title="SIP Connectivity Pack" id="diameter">SIP Connectivity Pack</a></li>
+            </ul>
+            <ul class="subnav-diameter">
+                <li><a href="release-notes.html" title="Release Notes" id="release-notes">Release Notes</a></li>
+                <li><a href="getting-started.html" title="Getting Started" id="getting-started">Getting Started</a></li>
+                <li><a href="configuration.html" title="Configuration" id="configuration">RA Configuration</a></li>
+                <li>
+                    <a href="features.html" title="Features" id="features">RA Features</a>
+                    <!--<strong>RA Features</strong>-->
+                    <ul class="subnav-diameter">
+                        <li><a href="features-clustering.html" title="Clustering" id="clustering">Cluster Support</a></li>
+                        <li><a href="features-ftdialogs.html" title="FTDialogs" id="ftdialogs">Replicated Dialogs</a></li>
+                        <li><strong>Forking</strong></li>
+                        <li><a href="features-lazyparsing.html" title="Lazy Parsing" id="lazyparsing">Lazy Parsing</a></li>
+                        <li><a href="features-outbound.html" title="Outbound" id="outbound">Outbound Connections</a></li>
+                    </ul>
+                </li>
+                <li><a href="ratype.html" title="RA Type" id="ratype">RA Type Overview</a></li>
+                <li><a href="examples.html" title="Examples" id="examples">Example Applications</a></li>
+            </ul>
+        </div>
+
+        <div id="content-column">
+
+            <div id="content-column-text">
+                <div class="h1-header">
+                    <h1>Forking</h1>
+                </div>
+
+                <h2>Overview</h2>
+
+                <p>SIP forking occurs when a downstream proxy "forks" a request, meaning it forwards a request to
+                several contacts in parallel. The proxy will forward all 1xx and 2xx responses back to the caller
+                (UAC), so it is possible for the caller to receive multiple 1xx or 2xx responses for the initial
+                request. Each response with a different to-tag represents a new dialog.</p>
+
+                <p>The <a href="api/jsip-ratype/index.html">JAIN SIP 1.2 RA Type</a> specifies some events to
+                handle forking cases, so that the multiple dialogs resulting from a forked request can be managed
+                and cleaned up easily.</p>
+
+                <h2>Basic Model</h2>
+
+                <p>The SIP RA's forking support follows this basic model, and only applies if the application
+                is using dialog activities.</p>
+                <ol>
+                    <li>The <i>original dialog activity</i> is created when the initial dialog-creating request is sent,
+                        and the application creates a new outgoing dialog using
+                        <a href="api/jain-sip-api/javax/sip/SipProvider.html#getNewDialog(javax.sip.Transaction)">SipProvider.getNewDialog(Transaction)</a>,
+                        <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html#getNewDialog(javax.sip.address.Address, javax.sip.address.Address)">SleeSipProvider.getNewDialog(Address,Address)</a>
+                        or <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html#getNewDialog(net.java.slee.resource.sip.DialogActivity, boolean)">SleeSipProvider.getNewDialog(DialogActivity,boolean)</a>.
+                    </li>
+
+                    <li>Each 1xx response that arrives, containing a To-tag that has not been seen before in this
+                        transaction, will create a new early dialog. The exception is the first 1xx response with a
+                        To-tag, this is taken to be part of the original dialog.</li>
+
+                    <li>When a 2xx response arrives, the dialog that it matches is retained and goes to the Confirmed
+                        state. All other early dialogs are ended.</li>
+
+                    <li>When any other final response arrives (3xx-6xx), all early dialog activities are ended.</li>
+                </ol>
+
+                <h2>UAC Procedures</h2>
+
+                <p>When sending an initial dialog-creating request, the UAC SBB should attach to the
+                original dialog activity. If a forked response arrives that creates a new dialog, the SIP RA
+                will fire an event on the original dialog activity, so that the SBB can know
+                that there is a new dialog activity. The event object is a
+                <a href="api/jsip-ratype/net/java/slee/resource/sip/DialogForkedEvent.html">DialogForkedEvent</a>.</p>
+
+                <p>The SBB can get a reference to the new dialog activity by calling
+                <a href="api/jsip-ratype/net/java/slee/resource/sip/DialogForkedEvent.html#getNewDialog()">DialogForkedEvent.getNewDialog()</a>.
+                The SBB can attach to the new activity and send requests on it.</p>
+
+                <p>If a 2xx response arrives on any early dialog, the RA will fire the normal response
+                event. If a 2xx response arrives with a different To-tag to any early dialog, the RA will
+                fire another <a href="api/jsip-ratype/net/java/slee/resource/sip/DialogForkedEvent.html">DialogForkedEvent</a>.
+                All other early dialogs will be ended.</p>
+
+                <p>Any late 2xx responses with different To-tags will be dropped. In this case the SIP RA
+                will send an ACK then a BYE to tear down this forked dialog at the server. Late 2xx responses
+                are not passed up to the SBB.</p>
+
+                <h2>UAS Procedures</h2>
+
+                <p>UAS applications typically do not fork, however if the application is a back-to-back user agent
+                (B2BUA), then it may need to create multiple server dialogs to correspond to the client dialogs
+                created in the UAC procedures above. This is essential if the application needs to receive mid-dialog
+                requests while the dialogs are in the Early state.</p>
+
+                <p>The JAIN SIP RA Type defines the method
+                <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html#forwardForkedResponse(javax.sip.ServerTransaction, javax.sip.message.Response)">SleeSipProvider.forwardForkedResponse()</a>.
+                This method should be called when the UAS forwards a dialog-creating response with a different
+                To-tag to the original dialog. This method will forward the response upstream, and return a new
+                dialog activity. The application can attach to the forked dialog activity in order to receive
+                any mid-dialog requests on the dialog.</p>
+
+                <p>The dialog activity contains a reference to the original server transaction. When a final response
+                is sent on the transaction, or by passing a 2xx response to
+                <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html#forwardForkedResponse(javax.sip.ServerTransaction, javax.sip.message.Response)">SleeSipProvider.forwardForkedResponse()</a>,
+                all other early dialog activities will end automatically.</p>
+
+                <h2>Example</h2>
+
+                <p>The B2BUA example application handles forking events and the multiple client and server
+                dialogs that may be created.</p>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">
+        <ul>
+            <li></li>
+        </ul>
+
+        <p class="copyright">&copy; OpenCloud Limited 2007-2010</p>
+    </div>
+</div>
+</body>
+</html>

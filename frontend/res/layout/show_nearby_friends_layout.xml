@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+>
+  
+  <TextView 
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:id="@+id/addNewFriendTextViewTitle"
+  	android:text=" SHOW NEARBY FRIENDS"
+  	style="@style/ActivityTitleText"
+  />
+  
+  <TextView 
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:id="@+id/removeFriendTextView"
+  	android:text="You have 0 contacts in your current location.\n\n"	  	  
+  />
+  
+  <com.opencloud.demo.PositionSelectionMapView
+    android:id="@+id/nearbyFriendsMapView" 
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" 
+    android:enabled="true"
+    android:clickable="true" 
+    android:apiKey="0_zVs7XkgJaay8k8LWZ02P7G_zacrngMUQpiPJA"
+  />
+	
+</LinearLayout>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<project name="LocationServerSbbProject" default="deploy" basedir=".">
+
+  <!-- Properties specific to this project -->
+  <property file="build.local.properties" />
+
+  <!-- Common JAIN SLEE build tasks -->
+  <import file="${basedir}/build/jainslee-1.1.xml" />
+  <!-- Common JAIN SLEE Sbb build tasks -->
+  <import file="${basedir}/build/jainslee-1.1-sbb.xml" />
+
+  <!-- Convenience target to deploy the sbb -->
+  <target name="deploy" depends="init, deploy-sbb" 
+  	description="Deploy project components"/>
+  <!-- Convenience target to undeploy the sbb -->
+  <target name="undeploy" depends="undeploy-sbb" 
+  	description="Undeploy project components"/>
+  
+</project>

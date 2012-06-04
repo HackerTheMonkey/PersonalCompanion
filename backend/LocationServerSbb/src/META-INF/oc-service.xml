@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE oc-service-xml PUBLIC "-//Open Cloud Ltd.//DTD JAIN SLEE Service Extension 1.1//EN" "http://www.opencloud.com/dtd/oc-service-xml_1_1.dtd">
+
+<oc-service-xml>
+  <service id="@service.name@">
+    
+  </service>
+</oc-service-xml>

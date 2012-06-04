@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE sbb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE SBB 1.1//EN" "http://java.sun.com/dtd/slee-sbb-jar_1_1.dtd">
+
+<sbb-jar>
+
+  <sbb id="jdbc-location-sbb">
+    <description>JDBC Location Service SBB</description>
+    <sbb-name>${location.jdbc.sbb.name}</sbb-name>
+    <sbb-vendor>${location.jdbc.sbb.vendor}</sbb-vendor>
+    <sbb-version>${location.jdbc.sbb.version}</sbb-version>
+
+    <sbb-classes>
+
+      <sbb-abstract-class>
+        <sbb-abstract-class-name>
+          com.opencloud.slee.services.sip.location.jdbc.JDBCLocationSbb
+        </sbb-abstract-class-name>
+      </sbb-abstract-class>
+
+      <sbb-local-interface>
+        <description>
+          Used by other SBBs to lookup SIP registration info
+        </description>
+        <sbb-local-interface-name>
+          com.opencloud.slee.services.sip.location.LocationService
+        </sbb-local-interface-name>
+      </sbb-local-interface>
+
+      <sbb-activity-context-interface>
+        <description>
+          Used to store SIP registration expiry info for a subscriber
+        </description>
+        <sbb-activity-context-interface-name>
+          com.opencloud.slee.services.sip.location.jdbc.RegistrationExpiryACI
+        </sbb-activity-context-interface-name>
+      </sbb-activity-context-interface>
+
+		<sbb-usage-parameters-interface>
+			<description>Counters</description>
+			<sbb-usage-parameters-interface-name>com.opencloud.slee.services.sip.location.jdbc.JDBCLocationSbbUsage</sbb-usage-parameters-interface-name>
+		</sbb-usage-parameters-interface>
+
+    </sbb-classes>
+
+    <event event-direction="Receive" initial-event="True">
+      <event-name>TimerEvent</event-name>
+      <event-type-ref>
+        <event-type-name>javax.slee.facilities.TimerEvent</event-type-name>
+        <event-type-vendor>javax.slee</event-type-vendor>
+        <event-type-version>1.0</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext"/>
+      <initial-event-selector-method-name>checkTimerEvent</initial-event-selector-method-name>
+    </event>
+
+    <env-entry>
+      <description>Enable automatic expiration of registrations</description>
+      <env-entry-name>expirationEnabled</env-entry-name>
+      <env-entry-type>java.lang.Boolean</env-entry-type>
+      <env-entry-value>true</env-entry-value>
+    </env-entry>
+
+    <!-- No RA bindings required - this SBB does not use any external resources -->
+
+  </sbb>
+
+</sbb-jar>
+

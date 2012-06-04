@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE sbb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE SBB 1.1//EN" "http://java.sun.com/dtd/slee-sbb-jar_1_1.dtd">
+
+<sbb-jar>
+    <sbb id="MySbb">
+
+        <sbb-name>SipRegistrarSbb</sbb-name>
+        <sbb-vendor>Opencloud</sbb-vendor>
+        <sbb-version>1.0</sbb-version>
+        
+
+        <library-ref>
+            <description></description>
+            <library-name>JSIP</library-name>
+            <library-vendor>javax.sip</library-vendor>
+            <library-version>1.2</library-version>
+        </library-ref>
+
+        <library-ref>
+            <description></description>
+            <library-name>OC SIP Extensions</library-name>
+            <library-vendor>OpenCloud</library-vendor>
+            <library-version>2.2</library-version>
+        </library-ref>
+
+        <library-ref>
+            <description></description>
+            <library-name>JSIP RA Type Classes</library-name>
+            <library-vendor>net.java.slee</library-vendor>
+            <library-version>1.2</library-version>
+        </library-ref>        
+        
+        <profile-spec-ref>
+            <profile-spec-name>LocationDbProfileSpec</profile-spec-name>
+            <profile-spec-vendor>Opencloud</profile-spec-vendor>
+            <profile-spec-version>1.0</profile-spec-version>
+            <profile-spec-alias>LocationDbProfileSpec</profile-spec-alias>
+        </profile-spec-ref>
+        
+        <sbb-classes>
+            <sbb-abstract-class>
+                <sbb-abstract-class-name>com.opencloud.demo.onenumber.sip.SipRegistrarSbb</sbb-abstract-class-name>
+            </sbb-abstract-class>
+        </sbb-classes>
+
+
+        <event event-direction="Receive" initial-event="True">
+            <event-name>SipRegisterRequest</event-name>
+            <event-type-ref>
+                <event-type-name>javax.sip.message.Request.REGISTER</event-type-name>
+                <event-type-vendor>net.java.slee</event-type-vendor>
+                <event-type-version>1.2</event-type-version>
+            </event-type-ref>
+            <initial-event-select variable="ActivityContext" />
+        </event>
+
+        <resource-adaptor-type-binding>
+            <description>To bind the SBB with the SIP RA</description>
+            <resource-adaptor-type-ref>
+                <resource-adaptor-type-name>OCSIP</resource-adaptor-type-name>
+                <resource-adaptor-type-vendor>OpenCloud</resource-adaptor-type-vendor>
+                <resource-adaptor-type-version>2.2</resource-adaptor-type-version>
+            </resource-adaptor-type-ref>
+
+            <activity-context-interface-factory-name>
+                slee/resources/sipra/siprafactory
+            </activity-context-interface-factory-name>
+
+            <resource-adaptor-entity-binding>
+                <description>Binding the SBB with an entity of this RA</description>
+                <resource-adaptor-object-name>slee/resources/sipra/sipresourceadapter</resource-adaptor-object-name>
+                <resource-adaptor-entity-link>OCSIP</resource-adaptor-entity-link>
+            </resource-adaptor-entity-binding>
+        </resource-adaptor-type-binding>
+    </sbb>
+</sbb-jar>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">    
+    
+    
+    <ImageView 
+    	android:id="@+id/listItemIconImageView"    	 
+    	android:layout_width="wrap_content" 
+    	android:layout_height="wrap_content" 
+    	android:layout_alignParentLeft="true"    
+    	android:padding="20px"
+    >
+   	</ImageView>
+    <TextView  
+    	android:layout_toRightOf="@id/listItemIconImageView"
+    	style="@style/ListItemTitleStyle"    	 
+    	android:id="@+id/itemNameTextView"	    	
+    >
+    </TextView>
+    
+    <TextView 
+    	style="@style/ListItemDescStyle"
+    	android:layout_toRightOf="@id/listItemIconImageView"
+    	android:id="@+id/itemDescTextView"
+    >
+    </TextView>
+    
+    <TextView 
+    	xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:padding="10dp"
+    	android:textSize="16sp" 
+    >
+	</TextView>  
+  
+</RelativeLayout>

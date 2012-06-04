@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <title>Cluster Support</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <link href="css/diameter.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+
+<body>
+
+<div id="wrapper">
+    <div id="header"><a href="http://www.opencloud.com/" title="OpenCloud">OpenCloud</a></div>
+
+    <div id="content">
+        <div id="content-top"></div>
+
+         <div id="subnav-column" class="diameter">
+            <ul class="subnav">
+                <li><a href="index.html" title="SIP Connectivity Pack" id="diameter">SIP Connectivity Pack</a></li>
+            </ul>
+            <ul class="subnav-diameter">
+                <li><a href="release-notes.html" title="Release Notes" id="release-notes">Release Notes</a></li>
+                <li><a href="getting-started.html" title="Getting Started" id="getting-started">Getting Started</a></li>
+                <li><a href="configuration.html" title="Configuration" id="configuration">RA Configuration</a></li>
+                <li>
+                    <a href="features.html" title="Features" id="features">RA Features</a>
+                    <!--<strong>RA Features</strong>-->
+                    <ul class="subnav-diameter">
+                        <li><strong>Cluster Support</strong></li>
+                        <!--<li><a href="features-clustering.html" title="Clustering" id="clustering">Cluster Support</a></li>-->
+                        <li><a href="features-ftdialogs.html" title="FTDialogs" id="ftdialogs">Replicated Dialogs</a></li>
+                        <li><a href="features-forking.html" title="Forking" id="forking">Forking</a></li>
+                        <li><a href="features-lazyparsing.html" title="Lazy Parsing" id="lazyparsing">Lazy Parsing</a></li>
+                        <li><a href="features-outbound.html" title="Outbound" id="outbound">Outbound Connections</a></li>
+                    </ul>
+                </li>
+                <li><a href="ratype.html" title="RA Type" id="ratype">RA Type Overview</a></li>
+                <li><a href="examples.html" title="Examples" id="examples">Example Applications</a></li>
+            </ul>
+        </div>
+
+        <div id="content-column">
+
+            <div id="content-column-text">
+                <div class="h1-header">
+                    <h1>Cluster Support</h1>
+                </div>
+
+                <p>The SIP RA can be deployed in a clustered Rhino configuration. This page describes how the RA
+                behaves in a cluster, and any issues the Rhino administrator or developer needs to be aware of.</p>
+
+                <h2>Overview</h2>
+
+                <p>When a SIP RA entity is created in a Rhino cluster, each cluster node creates an instance of a
+                SIP RA object. Each SIP RA instance will bind to the local IP interfaces on its node.</p>
+
+                <p>Each node has its own unique IP address. Rhino does not provide any form of IP address failover
+                or load balancing. An external load balancer must be used if it is necessary to present a
+                single virtual IP address for the cluster.</p>
+
+                <p>Activities, such as transactions and dialogs, created by the SIP RA instances on each node are
+                local to each node. If a node fails, all SIP activities on the node will be lost, but the SIP RAs
+                and services on other nodes can continue running, providing high availability of services.</p>
+
+                <p>It is possible to use <a href="features-ftdialogs.html">replicated dialog</a> activities. These 
+                are disabled by default. If enabled, replicated dialog activities, and service instances that are
+                attached to them, can continue on other nodes after a failure, providing some level of fault
+                tolerance.</p>
+
+                <h2>Multiple Nodes on One Host</h2>
+
+                <p>In the default configuration, the SIP RA cannot be deployed in a cluster where multiple nodes
+                are running on the same host. This is because each RA instance will try to bind to the same
+                SIP port, and the OS will not allow this if they are on the same host.</p>
+
+                <p>This can be resolved by specifying 2 additional <a href="configuration.html">configuration properties</a>
+                when deploying the RA, <code>OffsetPorts=true</code> and <code>PortOffset=&lt;LowestNodeID&gt;</code>.</p>
+
+                <p>These properties tell the RA to add an offset to the SIP port used on each node, so that each
+                node will use a unique port number. For example, if the RA is configured with Port=5060, and the
+                cluster has nodes with node IDs 101, 102 and 103, and <code>PortOffset=101</code>, the SIP ports
+                used by the 3 nodes will be 5060, 5061 and 5062 respectively.</p>
+
+                <a name="virtual-addresses"></a>
+                <h2>Virtual Addresses</h2>
+
+                <p>If the SIP RA is deployed in a cluster behind an IP load balancer, the load balancer typically
+                provides a virtual IP address (VIP) that external hosts use to connect to the cluster. The SIP RA
+                has an optional <code>VirtualAddresses</code> configuration property, which specifies a list
+                of hostnames or VIPs that the cluster is known by. This allows the SIP RA to detect when a
+                SIP URI or hostname should be treated as a local address, if it matches a virtual address for
+                the cluster. See <a href="configuration.html">RA Configuration</a>.</p>
+
+                <h2>SBB Programming</h2>
+
+                <h3>Location Independence</h3>
+
+                <p>In the SLEE programming model, SBBs are location-independent, meaning they can run on any
+                node that is part of the SLEE. SBBs do not need to know where they are running, and the SLEE
+                does not provide this information. This allows SBBs to be portable between different SLEE
+                implementations, that may or may not support clustering.</p>
+
+                <p>However, in SIP applications it is often necessary to know something about the platform, such
+                as the IP address and port that is being used by the SIP stack. For example, a proxy application
+                must check incoming Route headers, and remove the top Route header if it is addressed to the
+                proxy. To make this decision, the proxy must know the IP address and port that it is running on.
+                In a clustered environment, the local IP address and port information may not be known in advance,
+                so it cannot be provisioned in a profile or SBB env-entry.</p>
+
+                <h3>Helper Methods</h3>
+
+                <p>To help solve this problem, the JAIN SIP RA Type provides some helper methods that SBBs can use when they
+                need to know the local SIP network configuration. These methods are defined on the
+                <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html">SleeSipProvider</a>
+                interface, and are summarized below.</p>
+
+                <p><code>public boolean
+                    <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html#isLocalSipURI(javax.sip.address.SipURI)">isLocalSipURI</a>(SipURI uri);</code></p>
+
+                <p>This method is used to determine if a given SIP URI is addressed to the SIP RA on this node
+                    or one of its <a href="#virtual-addresses">virtual addresses</a>.
+                This is useful in the above proxy scenario, the proxy can easily check the URI in the Route header.</p>
+
+                <p><code>public boolean
+                    <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html#isLocalHostname(java.lang.String)">isLocalHostname</a>(String name);</code></p>
+
+                <p>This method determines if a hostname corresponds to the IP address of the SIP RA, or a <a href="#virtual-addresses">virtual address</a>.</p>
+
+                <p><code>public SipURI
+                    <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html#getLocalSipURI(java.lang.String)">getLocalSipURI</a>(String transport);</code></p>
+
+                <p>This method returns a SIP URI that is addressed to this node. This is useful for generating
+                Contact or Record-Route headers. When the SIP RA is configured with <a href="#virtual-addresses">virtual addresses</a>,
+                the first virtual address in the list will be used as the host part of the SIP URI.</p>
+
+                <p><code>public ViaHeader
+                    <a href="api/jsip-ratype/net/java/slee/resource/sip/SleeSipProvider.html#getLocalVia(java.lang.String, java.lang.String)">getLocalVia</a>
+                    (String transport, String branch)
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;throws TransportNotSupportedException;</code></p>
+
+                <p>This method creates a Via header containing the correct address and port for this node.</p>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">
+        <ul>
+            <li></li>
+        </ul>
+
+        <p class="copyright">&copy; OpenCloud Limited 2007-2010</p>
+    </div>
+</div>
+</body>
+</html>

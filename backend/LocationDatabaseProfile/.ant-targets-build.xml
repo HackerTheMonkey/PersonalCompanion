@@ -1,0 +1,15 @@
+clean
+compile-profile-spec
+compile-sbb
+deploy
+deploy-profile-spec
+deploy-sbb
+init
+init-management-db
+package-profile-spec
+package-sbb
+start-rhino
+stop-rhino
+undeploy
+undeploy-profile-spec
+undeploy-sbb

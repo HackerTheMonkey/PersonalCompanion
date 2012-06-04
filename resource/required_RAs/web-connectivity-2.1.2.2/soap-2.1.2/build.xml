@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+
+<project name="OpenCloud Rhino SLEE SDK - SOAP Resource Adaptor Examples" default="all">
+
+    <property file="build.properties"/>
+    <import file="${client.home}/etc/common.xml"/>
+
+   <macrodef name="set-request-service-port">
+    <attribute name="fromdir"/>
+    <attribute name="todir"/>
+    <attribute name="file"/>
+    <attribute name="ext"/>
+    <sequential>
+      <mkdir dir="@{todir}"/>
+      <copy todir="@{todir}" overwrite="yes">
+        <fileset dir="@{fromdir}" includes="@{file}"/>
+        <globmapper from="*.template" to="*@{ext}"/>
+        <filterset begintoken="@" endtoken="@">
+          <filter token="SOAP_LISTEN_PORT" value="${listen.port}"/>
+        </filterset>
+      </copy>
+    </sequential>
+  </macrodef>
+
+
+    <target name="deployexamples" depends="build-ping, build-request, deploysoapra, deploy-ping, deploy-request"
+            description="Deploy SOAP RA and example app">
+    </target>
+
+    <target name="undeployexamples" depends="login, undeploy-request, undeploy-ping, undeploysoapra"
+            description="Undeploy SOAP RA and example app">
+    </target>
+
+    <!-- *** Deploy SOAP Resource Adaptor *** -->
+    <target name="deploysoapra" description="Deploy SOAP resource adaptor" depends="login">
+        <slee-management>
+            <install srcfile="lib/${soap.ra.jar}" url="${baseurl}/lib/${soap.ra.jar}"/>
+            <createraentity entityname="${soap.ra.entity}" resourceadaptorid="${soap.ra.id}" properties="${soap.ra.properties}"/>
+            <activateraentity entityname="${soap.ra.entity}"/>
+            <bindralinkname entityname="${soap.ra.entity}" linkname="${soap.ra.linkname}"/>
+        </slee-management>
+    </target>
+
+    <!-- *** Undeploy SOAP Resource Adaptor *** -->
+    <target name="undeploysoapra" description="Undeploy SOAP resource adaptor" depends="login">
+        <slee-management>
+            <unbindralinkname linkname="${soap.ra.linkname}"/>
+            <deactivateraentity entityname="${soap.ra.entity}"/>
+            <waittilraentityisinactive entityname="${soap.ra.entity}"/>
+            <removeraentity entityname="${soap.ra.entity}"/>
+            <uninstall url="${baseurl}/lib/${soap.ra.jar}"/>
+        </slee-management>
+    </target>
+
+    <target name="compile-ping">
+        <mkdir dir="${classes}/soap-ping"/>
+        <javac source="1.5" target="1.5" debug="on" srcdir="${src}"
+               destdir="${classes}/soap-ping"
+               includes="com/opencloud/slee/example/soap/**/*.java">
+            <classpath>
+                <path refid="slee.classpath"/>
+                <pathelement location="${lib}/soap-events-${soap.ra.events.version}.jar"/>
+                <pathelement location="${lib}/soap-ratype-${soap.ra.type.version}.jar"/>
+                <pathelement location="${lib}/saaj-api-1.3.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="build-ping" depends="compile-ping" description="Build SOAP ping service deployable unit">
+        <!-- SBB jar -->
+        <mkdir dir="${jars}"/>
+        <jar jarfile="${jars}/sbb.jar">
+            <metainf dir="${src}/com/opencloud/slee/example/soap/ping/META-INF" includes="sbb-jar.xml"/>
+            <fileset dir="${classes}/soap-ping" includes="**/*.class"/>
+        </jar>
+
+        <!-- Service deployable unit jar -->
+        <jar jarfile="${jars}/soap-ping.jar" update="true">
+            <metainf dir="${src}/com/opencloud/slee/example/soap/ping/META-INF" includes="deployable-unit.xml"/>
+            <fileset dir="${jars}" includes="sbb.jar"/>
+            <fileset dir="${src}/com/opencloud/slee/example/soap/ping/META-INF" includes="service.xml"/>
+        </jar>
+
+        <delete file="${jars}/sbb.jar"/>
+    </target>
+
+    <!-- Deploy SOAP Ping Example Service -->
+    <target name="deploy-ping" depends="login, deploysoapra, build-ping">
+        <slee-management>
+            <install srcfile="jars/soap-ping.jar" url="${baseurl}/jars/soap-ping.jar"/>
+            <activateservice serviceid="name=SoapPingService,vendor=OpenCloud,version=1.1"/>
+            <settracerlevel tracername="" level="Finest">
+                <sbbNotificationSource>
+                    <service name="SoapPingService" vendor="OpenCloud" version="1.1"/>
+                    <sbb name="SoapPingSbb" vendor="OpenCloud" version="1.1"/>
+                </sbbNotificationSource>
+            </settracerlevel>
+        </slee-management>
+    </target>
+
+    <!-- Undeploy SOAP Ping Example Service -->
+    <target name="undeploy-ping" depends="login">
+        <slee-management>
+            <deactivateservice serviceid="name=SoapPingService,vendor=OpenCloud,version=1.1"/>
+            <waittilserviceisinactive serviceid="name=SoapPingService,vendor=OpenCloud,version=1.1"/>
+            <uninstall url="${baseurl}/jars/soap-ping.jar"/>
+        </slee-management>
+    </target>
+
+    <target name="compile-request">
+        <mkdir dir="${classes}/soap-request"/>
+        <javac source="1.5" target="1.5" debug="on" srcdir="${src}"
+               destdir="${classes}/soap-request"
+               includes="com/opencloud/slee/example/soap/request/**/*.java">
+            <classpath>
+                <path refid="slee.classpath"/>
+                <pathelement location="${lib}/soap-events-${soap.ra.events.version}.jar"/>
+                <pathelement location="${lib}/soap-ratype-${soap.ra.type.version}.jar"/>
+                <pathelement location="${lib}/saaj-api-1.3.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="build-request" depends="compile-request" description="Build SOAP request service deployable unit">
+        <!-- SBB jar -->
+        <set-request-service-port todir="${src}/com/opencloud/slee/example/soap/request/META-INF" fromdir="${src}/com/opencloud/slee/example/soap/request/META-INF" file="sbb-jar.template" ext=".xml"/>
+        <mkdir dir="${jars}"/>
+        <jar jarfile="${jars}/sbb.jar">
+            <metainf dir="${src}/com/opencloud/slee/example/soap/request/META-INF" includes="sbb-jar.xml"/>
+            <fileset dir="${classes}/soap-request" includes="**/*.class"/>
+        </jar>
+
+        <!-- Service deployable unit jar -->
+        <jar jarfile="${jars}/soap-request.jar" update="true">
+            <metainf dir="${src}/com/opencloud/slee/example/soap/request/META-INF" includes="deployable-unit.xml"/>
+            <fileset dir="${jars}" includes="sbb.jar"/>
+            <fileset dir="${src}/com/opencloud/slee/example/soap/request/META-INF" includes="service.xml"/>
+        </jar>
+
+        <delete file="${jars}/sbb.jar"/>
+    </target>
+
+    <!-- Deploy SOAP Request Example Service -->
+    <target name="deploy-request" depends="login, deploysoapra, build-request">
+        <slee-management>
+            <install srcfile="jars/soap-request.jar" url="${baseurl}/jars/soap-request.jar"/>
+            <settracerlevel tracername="" level="Finest">
+                <sbbNotificationSource>
+                    <service name="SoapRequestService" vendor="OpenCloud" version="1.1"/>
+                    <sbb name="SoapRequestSbb" vendor="OpenCloud" version="1.1"/>
+                </sbbNotificationSource>
+            </settracerlevel>
+        </slee-management>
+    </target>
+
+    <!-- Run SOAP Request Example Service -->
+    <target name="run-request" depends="login, deploy-request, deploy-ping" description="Run the SOAP Request Example Service">
+        <slee-management>
+            <deactivateservice serviceid="name=SoapRequestService,vendor=OpenCloud,version=1.1"/>
+            <waittilserviceisinactive serviceid="name=SoapRequestService,vendor=OpenCloud,version=1.1"/>
+            <activateservice serviceid="name=SoapRequestService,vendor=OpenCloud,version=1.1"/>
+        </slee-management>
+    </target>
+
+    <!-- Undeploy SOAP Request Example Service -->
+    <target name="undeploy-request" depends="login">
+        <slee-management>
+            <deactivateservice serviceid="name=SoapRequestService,vendor=OpenCloud,version=1.1"/>
+            <waittilserviceisinactive serviceid="name=SoapRequestService,vendor=OpenCloud,version=1.1"/>
+            <uninstall url="${baseurl}/jars/soap-request.jar"/>
+        </slee-management>
+    </target>
+
+    <!-- Compile Test SOAP Client -->
+    <target name="compile-test-client">
+        <mkdir dir="${classes}/soap-test-client"/>
+        <javac source="1.4" target="1.4" debug="on" srcdir="${src}"
+               destdir="${classes}/soap-test-client"
+               includes="com/opencloud/slee/example/soap/client/*.java">
+            <classpath>
+                <pathelement location="${lib}/saaj-api-1.3.jar"/>
+            </classpath>
+        </javac>
+    </target>
+    
+    <!-- Run Test SOAP Client -->
+    <target name="run-test-client" depends="compile-test-client, deploy-ping" description="Run the example SOAP Client">
+        <java fork="true" classname="com.opencloud.slee.example.soap.client.SoapClient">
+            <arg value="http://localhost:${listen.port}"/>
+            <arg value="${basedir}/src/com/opencloud/slee/example/soap/client/pingtest.xml"/>
+            <classpath>
+                <pathelement path="${classes}/soap-test-client"/>
+                <pathelement location="${lib}/saaj-api-1.3.jar"/>
+            </classpath>
+        </java>
+    </target>
+    
+    <target name="all" depends="deployexamples, run-test-client"/>
+
+</project>

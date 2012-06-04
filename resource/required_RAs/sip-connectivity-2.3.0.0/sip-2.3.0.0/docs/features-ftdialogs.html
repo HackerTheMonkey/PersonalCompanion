@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <title>Replicated Dialogs</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <link href="css/diameter.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+
+<body>
+
+<div id="wrapper">
+    <div id="header"><a href="http://www.opencloud.com/" title="OpenCloud">OpenCloud</a></div>
+
+    <div id="content">
+        <div id="content-top"></div>
+
+         <div id="subnav-column" class="diameter">
+            <ul class="subnav">
+                <li><a href="index.html" title="SIP Connectivity Pack" id="diameter">SIP Connectivity Pack</a></li>
+            </ul>
+            <ul class="subnav-diameter">
+                <li><a href="release-notes.html" title="Release Notes" id="release-notes">Release Notes</a></li>
+                <li><a href="getting-started.html" title="Getting Started" id="getting-started">Getting Started</a></li>
+                <li><a href="configuration.html" title="Configuration" id="configuration">RA Configuration</a></li>
+                <li>
+                    <a href="features.html" title="Features" id="features">RA Features</a>
+                    <!--<strong>RA Features</strong>-->
+                    <ul class="subnav-diameter">
+                        <li><a href="features-clustering.html" title="Clustering" id="clustering">Cluster Support</a></li>
+                        <li><strong>Replicated Dialogs</strong></li>
+                        <li><a href="features-forking.html" title="Forking" id="forking">Forking</a></li>
+                        <li><a href="features-lazyparsing.html" title="Lazy Parsing" id="lazyparsing">Lazy Parsing</a></li>
+                        <li><a href="features-outbound.html" title="Outbound" id="outbound">Outbound Connections</a></li>
+                    </ul>
+                </li>
+                <li><a href="ratype.html" title="RA Type" id="ratype">RA Type Overview</a></li>
+                <li><a href="examples.html" title="Examples" id="examples">Example Applications</a></li>
+            </ul>
+        </div>
+
+        <div id="content-column">
+
+            <div id="content-column-text">
+                <div class="h1-header">
+                    <h1>Replicated Dialogs</h1>
+                </div>
+
+                <h2>Overview</h2>
+
+                <p>The OpenCloud SIP RA supports replicated dialog activities. This allows dialog activities to be
+                    accessed on any node in the cluster, so that SBBs can attach to dialog activity contexts and use
+                    the dialogs on any node.</p>
+
+                <p>When a dialog activity is created, the dialog activity state is initially local to the
+                    calling node. When the dialog transitions to the "confirmed" state, ie. a 2xx response
+                    is sent or received on the initial transaction, the SIP RA replicates the dialog state
+                    to all nodes, using Rhino's built-in memory database.
+                    From this point on, the dialog activity state is available to all nodes.</p>
+
+                <p>If a node fails, any dialogs that it created can continue on other nodes. If another node
+                   receives a request for a dialog it has not seen before, it will check the replicated state
+                   and continue processing the request as an in-dialog request. Any SBB entities that were
+                   attached to the dialog activity context will be able to receive the request. This assumes
+                   that the SIP client is able to detect the node failure and send future requests to a different node.
+                   This can be achieved using a load balancer or DNS SRV records, for example.<p>
+
+                <h2>Performance</h2>
+
+                <p>The performance of FT dialogs will be slower due to the replication and transaction cost.
+                   Updates to replicated dialog activity state are performed transactionally, and require a
+                   distributed lock to be acquired by the node updating dialog state. For this reason the
+                   latency will be larger than when using non-replicated dialogs.</p>
+
+                <h2>Example</h2>
+
+                <p>The example B2BUA service supports the use of replicated dialogs. To deploy a fully replicated
+                   B2BUA, ensure that the RA is deployed with the <code>ReplicatedDialogSupport=true</code> property
+                   (see <a href="configuration.html">RA Configuration</a>), and also set the <code>B2BUA_REPLICATED</code>
+                   property in <code>sip.properties</code> to True. The latter ensures that Rhino deploys the B2BUA
+                   service as a replicated service, so that SBB CMP state is replicated too.</p>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">
+        <ul>
+            <li></li>
+        </ul>
+
+        <p class="copyright">&copy; OpenCloud Limited 2007-2010</p>
+    </div>
+</div>
+</body>
+</html>

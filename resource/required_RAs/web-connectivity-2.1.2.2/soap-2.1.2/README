@@ -1,0 +1,58 @@
+OpenCloud
+=========================
+
+SOAP Examples Quick Start
+-------------------------
+
+This file summarises the steps required to deploy and test the example 
+SOAP services.
+
+QUICK START:
+
+0. Start your SLEE - $RHINO_HOME/start-rhino.sh
+
+
+1. Check the listen.port property in build.properties
+
+The listen.port specifies the port that the SOAP RA will attempt to 
+listen on when it is activated, and the port the test client will send to.
+The default port is 8000.  Change it if necessary your environment.
+
+
+2. Deploy the examples
+
+Using Ant, build the "deployexamples" target. This will deploy the SOAP
+resource adaptor and the example SOAP services (Ping and Request).
+
+    ant deployexamples
+
+
+3. Test the Ping service
+
+The examples include a simple SOAP client [1] which reads a SOAP envelope
+from the file [2], sends the envelope to the URL represented by the SOAP RA
+(http://localhost:listening-prot) and prints the response received.
+
+The response is sent by the Ping service [3].
+
+Use the "run-test-client" target to compile and run the test SOAP client.
+
+    ant run-test-client
+
+
+4. Test the Request service
+
+The examples include also a SOAP client service [4] that sends the same
+request. The service creates a SOAP request on activation and logs the
+response sent back.
+
+Use the "run-request" target to activate and deactivate the request service
+and see the response on the Rhino log.
+
+    ant run-request
+
+
+[1] - src/com/opencloud/slee/example/soap/client/SoapClient.java
+[2] - src/com/opencloud/slee/example/soap/client/pingtest.xml
+[3] - src/com/opencloud/slee/example/soap/ping/SoapPingSbb.java
+[4] - src/com/opencloud/slee/example/soap/request/SoapRequestSbb.java

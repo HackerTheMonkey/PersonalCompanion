@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Base application theme is the default theme. -->
+    <style name="MainApplicationTheme" parent="@android:style/Theme">
+        <!-- TODO -->
+    </style>
+	<!-- This style is used for all of the activities as the header title of the header TextView-->
+    <style name="ActivityTitleText">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#111166</item>
+        <item name="android:background">#a7a697</item>
+    </style>   
+	<!-- This style is being used for the display of the item description of the main ListView of the application-->
+    <style name="ListItemDescStyle">
+    	<item name="android:layout_height">wrap_content</item>
+    	<item name="android:layout_width">wrap_content</item>
+    	<item name="android:paddingTop">50px</item>
+    	<item name="android:paddingBottom">3px</item>
+    	<item name="android:textColor">#D3F0D3</item>    
+    </style>
+	<!-- This style is being used for the display of the list item title for the items of the main ListView of the application -->
+    <style name="ListItemTitleStyle" parent="@style/ListItemDescStyle">
+    	<item name="android:textSize">30px</item>
+    	<item name="android:textColor">#19C219</item>
+    	<item name="android:textStyle">bold</item>
+    	<item name="android:paddingBottom">20px</item>
+    	<item name="android:paddingTop">5px</item>
+    	<item name="android:typeface">serif</item>
+    </style>	
+    
+    <style name="AboutActivityCustomDialogStyle" parent="@android:style/Theme.Dialog">
+    	<item name="android:layout_width">10px</item>
+    	<item name="android:layout_height">10px</item>
+    </style>
+    
+    <style name="SeparatorTextViewStyle">
+    	<item name="android:background">#85B8D1B2</item>
+		<!-- This what defines the TextAppearance	-->
+    	<item name="android:textColor">#D3F0D3</item>
+    	<item name="android:textSize">18px</item>
+    	<item name="android:textStyle">bold</item>
+    </style>    
+</resources>

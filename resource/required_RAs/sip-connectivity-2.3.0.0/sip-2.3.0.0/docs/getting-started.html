@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <title>Getting Started</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <link href="css/diameter.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+
+<body>
+
+<div id="wrapper">
+    <div id="header"><a href="http://www.opencloud.com/" title="OpenCloud">OpenCloud</a></div>
+
+    <div id="content">
+        <div id="content-top"></div>
+
+        <div id="subnav-column" class="diameter">
+            <ul class="subnav">
+                <li><a href="index.html" title="SIP Connectivity Pack" id="diameter">SIP Connectivity Pack</a></li>
+            </ul>
+            <ul class="subnav-diameter">
+                <li><a href="release-notes.html" title="Release Notes" id="release-notes">Release Notes</a></li>
+                <li><strong>Getting Started</strong></li>
+                <li><a href="configuration.html" title="Configuration" id="configuration">RA Configuration</a></li>
+                <li><a href="features.html" title="Features" id="features">RA Features</a></li>
+                <li><a href="ratype.html" title="RA Type" id="ratype">RA Type Overview</a></li>
+                <li><a href="examples.html" title="Examples" id="examples">Example Applications</a></li>
+            </ul>
+        </div>
+
+        <div id="content-column">
+
+            <div id="content-column-text">
+                <div class="h1-header">
+                    <h1>Getting Started</h1>
+                </div>
+
+                <p>
+                    This page summarises the steps required to get the example SIP Proxy and Registrar
+                    services deployed in Rhino. See the SIP Examples chapter in the Rhino Admin Guide
+                    for more detailed information on these examples.
+                </p>
+
+                <ol>
+                    <li>
+                        <p>Start Rhino: <code>$RHINO_HOME/start-rhino.sh</code></p>
+                    </li>
+                    <li>
+                        <p>Edit domain name property in <code>sip.properties</code>.</p>
+
+                        <p>For correct operation of the SIP proxy, this property needs to be modified:</p>
+
+                        <p><code>PROXY_DOMAINS=opencloud.com,opencloud.co.nz</code></p>
+
+                        <p>PROXY_DOMAINS is the list of domains that the proxy will be "authoritative"
+                        for. This means for any requests received for URIs in these domains, including
+                        subdomains, the proxy will attempt to map the URI to a local, registered contact address
+                        using the location service SBB. If no user has registered at that address,
+                        the proxy will respond with a 4xx error code. If the request is for a domain
+                        that the proxy does not know about, it will attempt to forward the request
+                        using standard SIP routing rules.</p>
+
+                        <p>The properties in <code>sip.properties</code> are substituted into SBB deployment
+                        descriptors when the example applications are built.</p>
+                    </li>
+                    <li>                    <p>Deploy the examples.</p>
+
+                        <p>Using Ant, execute the "deployexamples" target. This will deploy the SIP
+                            Resource Adaptor and the SIP Location Service, Registrar and Proxy services.</p>
+
+                        <p><code>$ ant deployexamples</code></p>
+                    </li>
+                    <li>
+                        <p>Use a SIP user agent (such as linphone for Linux) to send SIP requests to
+                            the server.</p>
+                        <p>See the SIP Examples chapter in the Rhino Admin Guide for more
+                            details on using linphone.</p>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">
+        <ul>
+            <li></li>
+        </ul>
+
+        <p class="copyright">&copy; OpenCloud Limited 2007-2010</p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<project name="Example JAIN SLEE 1.1 Project" default="deploy" basedir=".">
+
+  <!-- Properties specific to this project -->
+  <property file="build.local.properties" />
+
+  <!-- Common JAIN SLEE build tasks -->
+  <import file="${basedir}/build/jainslee-1.1.xml" />
+  <!-- Common JAIN SLEE Sbb build tasks -->
+  <import file="${basedir}/build/jainslee-1.1-sbb.xml" />
+  <!-- Common JAIN SLEE Profiles build tasks -->
+  <import file="${basedir}/build/jainslee-1.1-profile-spec.xml" />
+
+  <!-- Convenience target to deploy the project components -->
+  <target name="deploy" depends="init, deploy-profile-spec, create-profiles, deploy-sbb" description="Deploy project components" />
+  <!-- Convenience target to undeploy the project components -->
+  <target name="undeploy" depends="undeploy-sbb, remove-profiles, undeploy-profile-spec" description="Undeploy project components" />
+
+  <target name="create-profiles" depends="login">
+    <slee-management>
+      <createprofiletable tablename="${profile.table.name}">
+        <component name="${profile-spec.name}" vendor="${profile-spec.vendor}" version="${profile-spec.version}" />
+      </createprofiletable>
+      <createprofile tablename="${profile.table.name}" profilename="${profile.name}">
+        <profilevalue name="World" value="JAIN SLEE" />
+      </createprofile>
+    </slee-management>
+  </target>
+
+  <target name="remove-profiles" depends="login">
+    <slee-management>
+      <removeprofiletable tablename="${profile.table.name}" />
+    </slee-management>
+  </target>
+
+</project>

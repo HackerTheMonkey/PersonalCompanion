@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest 
+	  xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.opencloud.demo"
+      android:versionName="1.0"
+	  android:versionCode="1">
+    
+    <application 
+    	android:icon="@drawable/icon" 
+    	android:label="@string/app_name"
+    	android:process="com.opencloud.demo.companion.mainProcess"
+    	android:debuggable="true" 
+    	android:theme="@style/MainApplicationTheme"
+    >
+        <!-- Indicating what external libraries are to be used in the application -->
+        <uses-library android:name="com.google.android.maps"/>
+        		
+		<!-- This is the main activity of the application that get displayed when the user first launch the application-->
+        <activity 
+        	android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:process=":mainActivityProcess"
+        >
+			<!-- The intents that this activity will be invoked upon their firing are defined in this intent filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Sub Activities that are called from the main activity -->
+        <activity android:name=".EditCallManagementRulesSubActivity"></activity>
+        <activity android:name=".PositionSelectionMapSubActivity"></activity>
+        <activity android:name=".ListCallManagementRulesSubActivity"></activity>
+        
+        <activity android:name=".ShowNearbyFriendsSubActivity"></activity>
+        <activity android:name=".AddFriendSubActivity"></activity>
+        <activity android:name=".RemoveFriendSubActivity"></activity>
+        <activity android:name=".ShowFriendRequestNotificationSubActivity"></activity>
+        
+        <activity android:name=".SettingsSubActivity"></activity>
+        <activity android:name=".AboutSubActivity" android:configChanges="orientation" android:theme="@style/AboutActivityCustomDialogStyle"></activity>
+
+	<!-- Register a Broadcast Receiver that listens for ACTION_REBOOT intents  -->
+	<receiver
+		android:enabled="true"
+		android:name="com.opencloud.demo.ActionRebootBroadcastReceiver"
+		android:process="com.opencloud.demo.companion.broadcastReceiverProcess"
+	>
+		<intent-filter>
+			<action android:name="android.intent.action.BOOT_COMPLETED"></action>
+		</intent-filter>
+	</receiver>
+
+    </application>
+			
+    <uses-sdk android:minSdkVersion="7" />
+    <!-- The set of permissions that this application is granted   -->	
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+		
+</manifest> 

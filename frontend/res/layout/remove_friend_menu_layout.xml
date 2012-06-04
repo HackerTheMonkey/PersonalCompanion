@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+>
+  
+  <TextView 
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:id="@+id/addNewFriendTextViewTitle"
+  	android:text=" REMOVE CONTACT"
+  	style="@style/ActivityTitleText"
+  />
+  
+  <TextView 
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:id="@+id/addNewFriendTextView"
+  	android:text="Please enter the mobile number of the friend that you want to remove, your friend must be using our application and being a valid registered user in our database for you to remove him/her"	  	  
+  />
+  
+  <TextView 
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:id="@+id/enterMsisdnTextView"
+  	android:text="\n\nPlease enter your friend mobile number:\n"	  	  
+  />
+  
+  <EditText
+	android:id="@+id/enterMsisdnEditText"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"  	
+	android:maxLines="1"
+  />
+  
+  <TextView 
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:id="@+id/separatorTextView"
+  	android:text="\n"	  	  
+  />
+  
+  <Button
+	  	android:id="@+id/addFriendButton"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:text="Remove Contact"
+  />
+  
+</LinearLayout>

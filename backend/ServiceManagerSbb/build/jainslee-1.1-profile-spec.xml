@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<project name="Example JAIN SLEE Profile Spec tasks">
+
+  <!-- Compile project classes -->
+  <target name="compile-profile-spec" description="Compile Profile Spec classes">
+    <mkdir dir="${classes}/java/profile-spec" />
+    <javac srcdir="${src}/profile-spec" destdir="${classes}/java/profile-spec" source="${jdk.version}" target="${jdk.version}" debug="true" includes="**/*.java">
+      <classpath>
+        <path refid="slee.classpath" />
+        <fileset dir="${lib}" includes="**/*.jar"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <!-- Package and build Profile Spec Deployment Unit -->
+  <target name="package-profile-spec" depends="compile-profile-spec" description="Package and build Profile Spec Deployment Unit">
+    <copy-descriptors-and-filter fromDir="${src}" toDir="${classes}" />
+    <mkdir dir="${jars}"/>
+    <deployablejar destfile="${jars}/profile-spec-deployable-unit.jar" metainfbase="${classes}/META-INF">
+      <profilespecjar destfile="${jars}/profile-spec-deployable-jar.jar" classpath="${classes}/java/profile-spec" extjarxml="oc-profile-spec-jar.xml">
+        <classpath>
+          <path location="${classes}/java/profile-spec" />
+          <path location="${lib}" />
+        </classpath>
+        <fileset dir="${classes}/java/profile-spec" />
+      </profilespecjar>
+    </deployablejar>
+    <delete file="${jars}/profile-spec-deployable-jar.jar" />
+  </target>
+
+  <!--  Deploy Profile Spec DU -->
+  <target name="deploy-profile-spec" depends="package-profile-spec, login" description="Deploy Profile Spec DU">
+    <slee-management>
+      <install srcfile="${jars}/profile-spec-deployable-unit.jar" url="file:${jars}/${profile-spec.name}-${profile-spec.version}-${profile-spec.vendor}-deployable-unit.jar" />
+      <settracelevel level="${profile-spec.log.level}">
+          <component name="${profile-spec.name}" vendor="${profile-spec.vendor}" version="${profile-spec.version}" type="pspec"/>
+      </settracelevel>
+    </slee-management>
+  </target>
+
+  <!-- Undeploy Profile Spec DU -->
+  <target name="undeploy-profile-spec" depends="login" description="Undeploy Profile Spec DU">
+    <slee-management>
+      <uninstall url="file:${jars}/${profile-spec.name}-${profile-spec.version}-${profile-spec.vendor}-deployable-unit.jar" />
+    </slee-management>
+  </target>
+</project>

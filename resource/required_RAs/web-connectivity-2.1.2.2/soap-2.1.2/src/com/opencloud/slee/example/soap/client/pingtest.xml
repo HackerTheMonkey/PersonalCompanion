@@ -1,0 +1,7 @@
+<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+  <Body>
+    <ping>
+      <echoText>OpenCloud SOAP Resource Adaptor Test</echoText>
+    </ping>
+  </Body>
+</Envelope>
